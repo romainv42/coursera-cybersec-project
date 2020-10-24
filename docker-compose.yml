@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  database:
+    image: postgres
+    networks:
+      - capstone-nw
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - capstone-nw
+  
+  webapp-dev:
+    image: node:14-alpine
+    networks:
+      - capstone-nw
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    command: npm run dev
+
+networks:
+  capstone-nw:
+
