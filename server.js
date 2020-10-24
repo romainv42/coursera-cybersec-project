@@ -2,7 +2,7 @@ const path = require("path")
 
 const {
     NODE_ENV,
-    DATABASE,
+    DATABASE_URL,
     POSTGRES_PASSWORD,
     POSTGRES_USER,
     POSTGRES_DB,
@@ -23,7 +23,7 @@ fastify.register(require('fastify-static'), {
 
 // Initiate our Database Helper Plugin
 fastify.register(require("./plugins/database"), {
-    connectionString: DATABASE,
+    connectionString: DATABASE_URL,
     user: POSTGRES_USER,
     password: POSTGRES_PASSWORD,
     database: POSTGRES_DB,
