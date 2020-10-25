@@ -1,3 +1,5 @@
 module.exports = async (fastify) => {
-    fastify.get("/", (_, reply) => reply.sendFile("index.html"))
+    fastify.setNotFoundHandler(function (request, reply) {
+        reply.sendFile("index.html")
+    })
 }

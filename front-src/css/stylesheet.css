@@ -37,6 +37,31 @@ p {
     margin-bottom: 8px;
 }
 
-.sign-in input {
+input, textarea {
     display: block;
+}
+
+.required::after {
+    content: "*";
+    color: red;
+}
+
+.error {
+    font-size: 0.8rem;
+    color: red;
+}
+
+.choose-option li {
+    list-style-type: disclosure-closed;
+    padding: 4px;
+    border: solid 1px #cccccc;
+    background-color: #dadada;
+}
+
+.choose-option li.selected {
+    list-style-type: disclosure-open;
+}
+
+.center {
+    text-align: center;
 }

@@ -30,8 +30,11 @@ const databaseHelper = function (fastify, options, done) {
         pool.end()
     })
 
+    require("./queries/config")(pool).configure()
+
     const helper = {
         users: require("./queries/user")(pool),
+        emails: require("./queries/emails")(pool),
     }
 
     fastify.decorate("dbHelper", helper)
