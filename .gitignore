@@ -107,3 +107,5 @@ dist
 secrets/*
 
 __data
+
+public
