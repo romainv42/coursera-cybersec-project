@@ -42,15 +42,15 @@ fastify.register(require("./plugins/database"), {
     server: POSTGRES_SERVER,
 })
 
-// Configure route for static files
-fastify.register(require("./routes/static"))
-
 // Configure route to get initial CSRF token
 fastify.register(require("./routes/csrf"), { prefix: "/api/csrf" })
 
 
 // Configure route for user API
 fastify.register(require("./routes/users"), { prefix: "/api/users" })
+
+// Configure route for static files
+fastify.register(require("./routes/static"))
 
 // Launching the server
 fastify.listen(process.env.PORT || 3000, "0.0.0.0", (err, address) => {

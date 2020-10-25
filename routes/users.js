@@ -17,6 +17,7 @@ module.exports = async function (fastify) {
             login && dbHelper.users.exists("login", login) || {},
             email && dbHelper.users.exists("email", email) || {},
         ])
+        console.log(emailExists)
 
         req.log.debug({ login, email })
         return {

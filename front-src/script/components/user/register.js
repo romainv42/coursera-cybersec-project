@@ -1,43 +1,7 @@
-const root = document.getElementById("rvapp")
+import Services from "../../services"
+
 
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i
-
-const Loader = {
-    view: () => m(".lds-roller", [
-        m("div"),
-        m("div"),
-        m("div"),
-        m("div"),
-        m("div"),
-        m("div"),
-        m("div"),
-        m("div"),
-    ])
-}
-
-/**
- * Sign In component
- */
-const Signin = {
-    signin: async function () {
-
-    },
-    view: function () {
-        return m("article", [
-            m("section.sign-in", [
-                m("h3", "Sign In"),
-                m("form", { onsubmit: () => { this.signin(); return false; } }, [
-                    m("label[for=si-login]", [
-                        "Login:",
-                        m("input#si-login[type=text][placeholder=your login]")
-                    ]),
-                    m(m.route.Link, { href: "/register", className: "button" }, "Create account"),
-                    m("button[type=submit].button.is-primary", "Next"),
-                ])
-            ]),
-        ])
-    }
-}
 
 /**
  * Register stage one: fill basic information
@@ -344,34 +308,4 @@ const Register = {
     }
 }
 
-/*
-
-*/
-
-
-/**
- * Welcome page
- */
-const Welcome = {
-    view: () => m(".welcome", [
-        m("h2", "Welcome to my Capstone Project"),
-        m("p", "This project is develop as part of the ",
-            m("a", { href: "https://www.coursera.org/specializations/cyber-security" }, "Coursera Cybersecurity specialization of the University of the Maryland."),
-        ),
-        m("p", "To validate the specialization, the Capstone project consists on a simple messaging system."),
-        m("p", "This is my implementation of this project and you can find the source code on ",
-            m("a", { href: "https://github.com/romainv42/coursera-cybersec-project" }, "Github")
-        ),
-        m("p", [
-            m(m.route.Link, { href: "/sign", }, "Sign in"),
-            m("span", " | "),
-            m(m.route.Link, { href: "/register" }, "Create account"),
-        ])
-    ])
-}
-
-m.route(root, "/", {
-    "/": Welcome,
-    "/sign": Signin,
-    "/register": Register,
-})
+export { Register }

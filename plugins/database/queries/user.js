@@ -6,7 +6,15 @@ module.exports = function (pool) {
 
     return {
         exists: function (field, value) {
-            return co.query("SELECT 1 FROM users WHERE $1=$2", [field, value])
+            let query
+            if (field === "email") {
+                query = "SELECT 1 FROM users WHERE email=$1"
+            }
+            if (field === "login") {
+                query = "SELECT 1 FROM users WHERE login=$1"
+            }
+
+            return co.query(query, [value])
         },
         search: function (login) {
             return co.query("SELECT * FROM Users WHERE email=$1", [email])
