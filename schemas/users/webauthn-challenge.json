@@ -50,6 +50,12 @@
                         }
                     }
                 },
+                "attestation": {
+                    "type": "string"
+                },
+                "userVerification": {
+                    "type": "string"
+                },
                 "pubKeyCredParams": {
                     "description": "List of supported algorithms",
                     "type": "array",

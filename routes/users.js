@@ -10,13 +10,16 @@ const {
 } = require("../utils")
 
 const {
-    verifyAttestation
+    verifyAuthenticatorAttestationResponse,
+    verifyAuthenticatorAssertionResponse,
+    generateServerMakeCredRequest,
+    generateServerGetAssertion,
 } = require("../utils/webauthn")
 
 module.exports = async function (fastify) {
     const { dbHelper, csrf, mailer } = fastify
 
-    fastify.addHook('onRequest', csrf.check)
+    // fastify.addHook('onRequest', csrf.check)
 
     fastify.get("/exists", {
         schema: require("../schemas/users/exists.json")
@@ -71,7 +74,7 @@ module.exports = async function (fastify) {
                 }
             }
 
-            const response = verifyAttestation(webauthNResponse.response)
+            const response = verifyAuthenticatorAttestationResponse(webauthNResponse.response)
             if (!response) throw {
                 statusCode: 400,
                 error: "WebAuthn Invalid response"
@@ -98,8 +101,16 @@ module.exports = async function (fastify) {
     fastify.post("/webauthn-challenge", {
         schema: require("../schemas/users/webauthn-challenge.json")
     }, async (req, res) => {
-        const challenge = randomBase64(32)
         const uid = randomBase64(32)
+        // const challenge = generateServerMakeCredRequest({
+        //     name: "Coursera Cybersecurity Capstone Project",
+        //     id: ORIGIN,
+        // }, req.body.login, req.body.login, uid)
+
+        // req.log.info(challenge)
+
+        // return challenge
+        const challenge = randomBase64(32)
 
         req.session = {
             ...req.session,

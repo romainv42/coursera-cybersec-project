@@ -15,7 +15,9 @@
   "author": "romainv42",
   "license": "ISC",
   "dependencies": {
+    "@fidm/x509": "^1.2.1",
     "@sendgrid/mail": "^7.3.0",
+    "base64url": "^3.0.1",
     "cbor": "^5.1.0",
     "dotenv": "^8.2.0",
     "fastify": "^3.7.0",
@@ -26,6 +28,7 @@
     "fastify-plugin": "^3.0.0",
     "fastify-session": "^5.2.0",
     "fastify-static": "^3.3.0",
+    "iso-3166-1": "^2.0.1",
     "pg": "^8.4.1",
     "pino-pretty": "^4.3.0",
     "qrcode": "^1.4.4",

@@ -186,7 +186,7 @@ const chooseSecurityOption = {
         }
     },
     initiateWebAuthN: async function () {
-        const pubkeyOpts = await Services.Users.webauthnChallenge("this.user.login")
+        const pubkeyOpts = await Services.Users.webauthnChallenge(this.user.login)
         pubkeyOpts.challenge = Uint8Array.from(window.atob(pubkeyOpts.challenge), c => c.charCodeAt(0))
         pubkeyOpts.user.id = Uint8Array.from(window.atob(pubkeyOpts.user.id), c => c.charCodeAt(0))
 
