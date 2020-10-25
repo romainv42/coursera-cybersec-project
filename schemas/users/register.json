@@ -1,0 +1,44 @@
+{
+    "description": "Register a new user in the database",
+    "body": {
+        "type": "object",
+        "properties": {
+            "login": {
+                "type": "string",
+                "maxLength": 16
+            },
+            "email": {
+                "type": "string",
+                "maxLength": 255,
+                "format": "email"
+            },
+            "moreInfo": {
+                "type": [
+                    "string",
+                    "null"
+                ]
+            },
+            "authenticationMode": {
+                "type": "string",
+                "enum": [
+                    "PWD",
+                    "WAN"
+                ]
+            },
+            "auth": {
+                "type": "object",
+                "properties": {
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "confirmPwd": {
+                        "type": "string",
+                        "minLength": 8
+                    }
+                }
+            }
+        },
+        "required": ["login", "email", "authenticationMode", "auth"]
+    }
+}

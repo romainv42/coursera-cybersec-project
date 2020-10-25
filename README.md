@@ -32,6 +32,11 @@ openssl rand -base64 32
 - **POSTGRES_SERVER**: Database server address
 - **DATABASE**: contains the full connection string to the postgres database. This one is not required and will overriding POSTGRES_* values.
 
+There is more env variables I don't give you for obvious reasons:
+- **SENDGRID_API_KEY**: Sendgrid API Key used for email sending
+- **SENDGRID_SENDER**: Sendgrid Sender address
+
+
 Of course, values provided in `.env` file are only used to run locally and other values are set on the server.
 
 ## Running the project

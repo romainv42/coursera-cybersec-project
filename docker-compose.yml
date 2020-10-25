@@ -4,6 +4,8 @@ services:
     image: postgres
     networks:
       - capstone-nw
+    volumes:
+      - ./__data:/var/lib/postgresql/data
   adminer:
     image: adminer
     ports:
