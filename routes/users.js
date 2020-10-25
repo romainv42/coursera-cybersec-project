@@ -1,8 +1,8 @@
 const VALID_EMAIL_EXPIRES = 1000 * 60 * 60 * 24 // 24 hours in milliseconds
 
 const ORIGIN = process.env.NODE_ENV === "production" ?
-    "https://romainv42-capstone-project.herokuapp.com" :
-    "https://localhost:3000"
+    "romainv42-capstone-project.herokuapp.com" :
+    "localhost"
 
 const {
     randomBase64,
@@ -16,7 +16,7 @@ const {
 module.exports = async function (fastify) {
     const { dbHelper, csrf, mailer } = fastify
 
-    // fastify.addHook('onRequest', csrf.check)
+    fastify.addHook('onRequest', csrf.check)
 
     fastify.get("/exists", {
         schema: require("../schemas/users/exists.json")
@@ -56,14 +56,15 @@ module.exports = async function (fastify) {
                 Buffer.from(webauthNResponse.response.clientDataJSON, "base64")
                     .toString("utf-8")
             )
-            
-            // if (clientData.challenge !== req.session.challenge) {
-            //     throw {
-            //         statusCode: 400,
-            //         error: "Challenge mismatched!"
-            //     }
-            // }
-            if (clientData.origin !== ORIGIN) {
+
+            if (clientData.challenge !== req.session.challenge) {
+                throw {
+                    statusCode: 400,
+                    error: "Challenge mismatched!"
+                }
+            }
+            const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":3000" : "")}`
+            if (clientData.origin !== currentOrigin) {
                 throw {
                     statusCode: 400,
                     error: "Origin mismatched!"
@@ -124,6 +125,7 @@ module.exports = async function (fastify) {
             authenticatorSelection: {
                 authenticatorAttachment: "cross-platform",
             },
+            userVerification: "required",
             timeout: 60000,
             attestation: "direct",
         }
