@@ -1,5 +1,5 @@
 import Services from "../../services"
-
+import { Loader } from "../global"
 
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i
 
@@ -112,7 +112,7 @@ const chooseSecurityOption = {
         this.onnext = onnext
         this.previous = onprevious
     },
-    validate: function () {
+    validate: async function () {
         this.errors = null
         if (!this.authenticationMode) {
             this.errors = {
@@ -122,16 +122,17 @@ const chooseSecurityOption = {
 
             return
         }
-        const validMethod = this.authenticationMode === "PWD" ? "validatePwd" : "validateWebAuthN"
+        const validMethod = this.authenticationMode === "PWD" ? "validatePwd" : "initiateWebAuthN"
         try {
 
-            const user = this[validMethod]()
+            const user = await this[validMethod]()
+            console.log(user)
             this.onnext(user)
         } catch (e) {
             console.error("Some input error detected", e)
         }
     },
-    validatePwd: function () {
+    validatePwd: async function () {
         if (!this.auth.password) {
             this.errors = {
                 ...this.errors,
@@ -184,7 +185,35 @@ const chooseSecurityOption = {
             }
         }
     },
-    validateWebAuthN: function () { },
+    initiateWebAuthN: async function () {
+        const pubkeyOpts = await Services.Users.webauthnChallenge("this.user.login")
+        pubkeyOpts.challenge = Uint8Array.from(window.atob(pubkeyOpts.challenge), c => c.charCodeAt(0))
+        pubkeyOpts.user.id = Uint8Array.from(window.atob(pubkeyOpts.user.id), c => c.charCodeAt(0))
+
+        const credentialInfo = await navigator.credentials.create({ publicKey: pubkeyOpts })
+        if (!credentialInfo) {
+            this.errors = {
+                ...this.errors,
+                webauthn: "Your browser seems to be incompatible. Sorry."
+            }
+        }
+
+        const toBase64 = (arrayBuffer) => btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)))
+
+        return {
+            ...this.user,
+            authenticationMode: this.authenticationMode,
+            auth: {
+                id: credentialInfo.id,
+                rawId: toBase64(credentialInfo.rawId),
+                response: {
+                    clientDataJSON: toBase64(credentialInfo.response.clientDataJSON),
+                    attestationObject: toBase64(credentialInfo.response.attestationObject)
+                },
+                type: credentialInfo.type,
+            },
+        }
+    },
     view: function () {
         return m("p", "Please select your prefered authenticating system:", [
             m("form.sec-option", { onsubmit: () => { this.validate(); return false; } }, [
@@ -219,6 +248,18 @@ const chooseSecurityOption = {
                         `WebAuthN, a new passwordless way to authenticate yourself using a FIDO2 device.
                     You can use a dongle or your compatible smartphone. Try it.`,
                     ]),
+                    ...(this.authenticationMode === "WAN" ? [
+                        m(".center", [
+                            ...(this.errors && this.errors.webauthn ?
+                                [
+                                    m("p.errors", this.errors.webauthn),
+                                ] :
+                                [
+                                    m("button.button.is-primary", "Let's Go"),
+                                ]),
+                        ]),
+                    ] : [])
+
                 ]),
                 ...(this.errors && this.errors.auth ? [m("span.error", this.errors.auth, m("br"))] : []),
                 m("button[type=button].button.is-small", { onclick: () => this.previous() }, "Previous"),
@@ -278,11 +319,10 @@ const Register = {
             default:
                 this.currentStage = registerGlobalInfo
         }
+        m.redraw()
     },
     currentUser: {},
     next: function (user) {
-        console.log(user)
-        console.debug("Go Next")
         this.currentUser = user
         this.currentStageNum++
         this._setStage()

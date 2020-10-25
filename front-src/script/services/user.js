@@ -17,5 +17,15 @@ export default {
             method: "post",
             body: user
         })
+    },
+    webauthnChallenge: (login) => {
+        return securedRequest({
+            url: "/api/users/webauthn-challenge",
+            method: "post",
+            body: {
+                login,
+            }
+        })
     }
 }
+

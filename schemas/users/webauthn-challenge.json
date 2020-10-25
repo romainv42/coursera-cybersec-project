@@ -1,0 +1,73 @@
+{
+    "body": {
+        "description": "Route that generate challenge and user id, combined to default values for WebAuthN Credentials",
+        "type": "object",
+        "properties": {
+            "login": {
+                "type": "string",
+                "maxLength": 16
+            }
+        }
+    },
+    "response": {
+        "200": {
+            "description": "Result if public key options for navigator.credentials.create",
+            "type": "object",
+            "properties": {
+                "challenge": {
+                    "description": "Random challenge, in base 64",
+                    "type": "string"
+                },
+                "rp": {
+                    "description": "Relying Party, Information about the Website. Id must is the same as the url",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "description": "Title of the Website",
+                            "type": "string"
+                        },
+                        "id": {
+                            "description": "DNS address of the Website",
+                            "type": "string"
+                        }
+                    }
+                },
+                "user": {
+                    "description": "Information about the user",
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "description": "User Identifier. Distinct from the one in database. base 64 format",
+                            "type": "string"
+                        },
+                        "name": {
+                            "description": "User name",
+                            "type": "string"
+                        },
+                        "displayName": {
+                            "description": "User display name. For simplicity, I used the same one as the user name",
+                            "type": "string"
+                        }
+                    }
+                },
+                "pubKeyCredParams": {
+                    "description": "List of supported algorithms",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "description": "Type of algorithm. Public Key in our case",
+                                "type": "string"
+                            },
+                            "alg": {
+                                "description": "COSE Algorithm identifier. More info: https://www.iana.org/assignments/cose/cose.xhtml#algorithms",
+                                "type": "number"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

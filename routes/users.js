@@ -1,5 +1,18 @@
 const VALID_EMAIL_EXPIRES = 1000 * 60 * 60 * 24 // 24 hours in milliseconds
 
+const ORIGIN = process.env.NODE_ENV === "production" ?
+    "https://romainv42-capstone-project.herokuapp.com" :
+    "https://localhost:3000"
+
+const {
+    randomBase64,
+    base64url,
+} = require("../utils")
+
+const {
+    verifyAttestation
+} = require("../utils/webauthn")
+
 module.exports = async function (fastify) {
     const { dbHelper, csrf, mailer } = fastify
 
@@ -17,9 +30,6 @@ module.exports = async function (fastify) {
             login && dbHelper.users.exists("login", login) || {},
             email && dbHelper.users.exists("email", email) || {},
         ])
-        console.log(emailExists)
-
-        req.log.debug({ login, email })
         return {
             loginExists: !!loginExists?.length,
             emailExists: !!emailExists?.length,
@@ -39,6 +49,36 @@ module.exports = async function (fastify) {
                 }
             }
         }
+
+        if (authenticationMode === "WAN") {
+            webauthNResponse = req.body.auth
+            const clientData = JSON.parse(
+                Buffer.from(webauthNResponse.response.clientDataJSON, "base64")
+                    .toString("utf-8")
+            )
+            
+            // if (clientData.challenge !== req.session.challenge) {
+            //     throw {
+            //         statusCode: 400,
+            //         error: "Challenge mismatched!"
+            //     }
+            // }
+            if (clientData.origin !== ORIGIN) {
+                throw {
+                    statusCode: 400,
+                    error: "Origin mismatched!"
+                }
+            }
+
+            const response = verifyAttestation(webauthNResponse.response)
+            if (!response) throw {
+                statusCode: 400,
+                error: "WebAuthn Invalid response"
+            }
+
+            req.body.auth = response
+        }
+
         const user_id = await dbHelper.users.register(req.body)
         const validationCode = await dbHelper.emails.createEmail(user_id, dbHelper.emails.KINDS.validation, new Date(Date.now() + VALID_EMAIL_EXPIRES))
         await mailer.send({
@@ -52,5 +92,40 @@ module.exports = async function (fastify) {
 `
         })
         res.status(201).send("User successfully registered")
+    })
+
+    fastify.post("/webauthn-challenge", {
+        schema: require("../schemas/users/webauthn-challenge.json")
+    }, async (req, res) => {
+        const challenge = randomBase64(32)
+        const uid = randomBase64(32)
+
+        req.session = {
+            ...req.session,
+            challenge: base64url(challenge),
+            uid: base64url(uid),
+            login: req.body.login,
+        }
+
+        return {
+            challenge,
+            rp: {
+                name: "Coursera Cybersecurity Capstone Project",
+                id: ORIGIN,
+            },
+            user: {
+                id: uid,
+                name: req.body.login,
+                displayName: req.body.login,
+            },
+            pubKeyCredParams: [{
+                type: "public-key", alg: -7 // "ES256" IANA COSE Algorithms registry
+            }],
+            authenticatorSelection: {
+                authenticatorAttachment: "cross-platform",
+            },
+            timeout: 60000,
+            attestation: "direct",
+        }
     })
 }

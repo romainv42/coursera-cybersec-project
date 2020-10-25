@@ -38,6 +38,22 @@ module.exports = function (pool) {
                         user_id,
                         hmac(auth.password),
                     ])
+                } else if (authenticationMode === "WAN") {
+                    await co.query(`INSERT INTO authenticators
+                        ("user_id", "name", "fmt", "counter", "publicKey", "credID")
+                        VALUES ($1, 'Registration', $2, $3, $4, $5)
+                    `, [
+                        user_id,
+                        auth.fmt,
+                        auth.counter,
+                        auth.publicKey,
+                        auth.credID,
+                    ])
+                } else {
+                    throw {
+                        statusCode: 400,
+                        error: "Invalid authentication mode"
+                    }
                 }
                 await co.query("COMMIT")
                 return user_id
