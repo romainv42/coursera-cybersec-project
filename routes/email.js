@@ -14,7 +14,14 @@ module.exports = async function (fastify) {
             }
         }
 
-        req.log.info(rows)
-        return { cool: "raoul"}
+        const { user_id, kind } = rows[0]
+        try {
+            if (kind === "VALID") {
+                await dbHelper.users.validateEmail(user_id)
+            }
+            res.redirect("/email-verified")
+        } catch (e) {
+            res.redirect("/wrong-email")
+        }
     })
 }
