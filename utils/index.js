@@ -13,7 +13,7 @@ const randomBase64 = (length) => {
 const key = Buffer.from(process.env.HMAC, "base64")
 const hmac = (pwd) => {
     return crypto.createHmac("sha256", key)
-        .update(pwd)
+        .update(pwd).digest("base64")
 }
 
 

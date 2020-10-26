@@ -24,7 +24,7 @@ module.exports = function (pool) {
             `, [
                 user_id,
                 kind,
-                hmac(code).toString("base64"),
+                hmac(code),
                 deadTime,
             ])
 
@@ -34,7 +34,7 @@ module.exports = function (pool) {
             if (!code) throw "Code missing"
 
             return co.query("SELECT * FROM emails WHERE code = $1 AND not_after > $2", [
-                hmac(code).toString("base64"),
+                hmac(code),
                 new Date(),
             ])
         }

@@ -1,5 +1,5 @@
 const queries = [
-    
+
     `DROP TABLE IF EXISTS "public"."password"`,
     `DROP TABLE IF EXISTS "public"."challenges"`,
     `DROP TABLE IF EXISTS "public"."emails"`,
@@ -32,7 +32,7 @@ const queries = [
         "email_id" integer DEFAULT nextval('emails_email_id_seq') NOT NULL,
         "user_id" integer NOT NULL,
         "kind" character varying(5) NOT NULL,
-        "code" character varying(24) NOT NULL,
+        "code" text NOT NULL,
         "not_after" timestamp,
         CONSTRAINT "emails_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
     ) WITH (oids = false);`,
