@@ -61,6 +61,17 @@ module.exports = function (pool) {
                 await co.query("ROLLBACK")
                 throw e
             }
+        },
+        validateEmail: async function (user_id) {
+            const { rows } = await co.query("SELECT validated FROM users WHERE user_id=$1", [user_id])
+            if (!rows || !rows.length) {
+                throw "User doesn't exist"
+            }
+            const { validated } = rows[0]
+            if (validated) {
+                throw "Email address already validated"
+            }
+            return co.query("UPDATE users SET validated=true WHERE user_id=$1", [user_id])
         }
     }
 }

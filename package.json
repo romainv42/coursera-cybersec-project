@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon -r dotenv/config server.js",
+    "dev": "webpack --watch && nodemon -r dotenv/config server.js",
     "build": "webpack",
     "heroku-postbuild": "npx webpack"
   },
@@ -34,10 +34,10 @@
     "qrcode": "^1.4.4",
     "speakeasy": "^2.0.0",
     "webpack": "^5.2.0",
-    "webpack-cli": "^4.1.0"
+    "webpack-cli": "^4.1.0",
+    "copy-webpack-plugin": "^6.2.1"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^6.2.1",
     "nodemon": "^2.0.6"
   }
 }
