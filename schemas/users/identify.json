@@ -1,0 +1,48 @@
+{
+    "description": "Route to identify the user, providing credentials",
+    "body": {
+        "type": "object",
+        "properties": {
+            "username": {
+                "type": "string"
+            },
+            "remember": {
+                "type": "boolean"
+            },
+            "oneOf": {
+                "password": {
+                    "type": "string"
+                },
+                "authenticator": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "rawId": {
+                            "type": "string"
+                        },
+                        "response": {
+                            "type": "object",
+                            "properties": {
+                                "authenticatorData": {
+                                    "type": "string"
+                                },
+                                "clientDataJSON": {
+                                    "type": "string"
+                                },
+                                "signature": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": ["username", "remember"]
+}

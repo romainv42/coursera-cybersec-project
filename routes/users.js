@@ -1,4 +1,5 @@
-const VALID_EMAIL_EXPIRES = 1000 * 60 * 60 * 24 // 24 hours in milliseconds
+const H24_EXPIRES = 1000 * 60 * 60 * 24 // 24 hours in milliseconds
+const WEEK_EXPIRES = H24_EXPIRES * 7 // A week in milliseconds
 
 const ORIGIN = process.env.NODE_ENV === "production" ?
     "romainv42-capstone-project.herokuapp.com" :
@@ -12,8 +13,7 @@ const {
 const {
     verifyAuthenticatorAttestationResponse,
     verifyAuthenticatorAssertionResponse,
-    generateServerMakeCredRequest,
-    generateServerGetAssertion,
+    generateServerGetAssertion
 } = require("../utils/webauthn")
 
 module.exports = async function (fastify) {
@@ -73,7 +73,7 @@ module.exports = async function (fastify) {
                     error: "Origin mismatched!"
                 }
             }
-
+            req.session.challenge = null
             const response = verifyAuthenticatorAttestationResponse(webauthNResponse.response)
             if (!response) throw {
                 statusCode: 400,
@@ -84,7 +84,7 @@ module.exports = async function (fastify) {
         }
 
         const user_id = await dbHelper.users.register(req.body)
-        const validationCode = await dbHelper.emails.createEmail(user_id, dbHelper.emails.KINDS.validation, new Date(Date.now() + VALID_EMAIL_EXPIRES))
+        const validationCode = await dbHelper.emails.createEmail(user_id, dbHelper.emails.KINDS.validation, new Date(Date.now() + H24_EXPIRES))
         await mailer.send({
             to: req.body.email,
             subject: "Validate your registration",
@@ -133,5 +133,77 @@ module.exports = async function (fastify) {
             timeout: 60000,
             attestation: "direct",
         }
+    })
+
+    fastify.post("/sign-in", {
+        shema: require("../schemas/users/signin.json")
+    }, async (req, res) => {
+        const { rows } = await dbHelper.users.search(req.body.login.trim())
+        if (!rows || !rows.length) {
+            return {}
+        }
+        const { user_id, login } = rows[0]
+        const [
+            { rows: password },
+            { rows: authenticators },
+        ] = await Promise.all([
+            dbHelper.users.hasPasswordAuth(user_id),
+            dbHelper.users.getAuthenticators(user_id),
+        ])
+        const assertion = authenticators?.length && generateServerGetAssertion(authenticators)
+        req.session.challenge = assertion.challenge
+        
+        return {
+            login,
+            passwordEnabled: password && password.length === 1,
+            assertion,
+        }
+    })
+
+    fastify.post("/identify", {
+        schema: require("../schemas/users/identify.json")
+    }, async (req, res) => {
+        const { username, password, authenticator, remember } = req.body
+
+        const { rows } = await dbHelper.users.search(username.trim())
+        if (!rows || !rows.length) {
+            return {
+                statusCode: 400,
+                error: "User doesn't exist"
+            }
+        }
+        const { user_id } = rows[0]
+
+        let identified = false
+        if (password) {
+            const { rows } = await dbHelper.users.identifyByPassword(user_id, password)
+            identified = rows && rows.length
+        } else if (authenticator) {
+            const { rows: authenticators } = await dbHelper.users.getAuthenticators(user_id)
+
+            const clientData = JSON.parse(Buffer.from(authenticator.response.clientDataJSON, "base64").toString("utf8"));
+            
+            if (Buffer.from(clientData.challenge, "base64").toString("base64") !== req.session.challenge) {
+                throw {
+                    statusCode: 400,
+                    error: "Challenge mismatched!"
+                }
+            }
+            const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":3000" : "")}`
+            if (clientData.origin !== currentOrigin) {
+                throw {
+                    statusCode: 400,
+                    error: "Origin mismatched!"
+                }
+            }
+
+            identified = verifyAuthenticatorAssertionResponse(authenticator.response, authenticator.rawId, authenticators)
+        } else {
+            throw {
+                statusCode: 400,
+                error: "A Password or authenticator object is required"
+            }
+        }
+        return identified
     })
 }

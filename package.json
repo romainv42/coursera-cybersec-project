@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "webpack --watch && nodemon -r dotenv/config server.js",
+    "dev": "nodemon -r dotenv/config --ignore './public' --ignore './front-src' server.js",
+    "watch-front": "webpack --watch",
+    "watch-back": "nodemon -r dotenv/config --ignore './public' --ignore './front-src' server.js",
     "build": "webpack",
     "heroku-postbuild": "npx webpack"
   },

@@ -17,9 +17,9 @@ module.exports = function (pool) {
             return co.query(query, [value])
         },
         search: function (login) {
-            return co.query("SELECT * FROM Users WHERE email=$1", [email])
+            return co.query("SELECT * FROM Users WHERE validated=true AND (email=$1 OR login=$1)", [login])
         },
-        register: async function ({ authenticationMode, auth, ...user}) {
+        register: async function ({ authenticationMode, auth, ...user }) {
             await co.query("BEGIN TRANSACTION")
             try {
                 const { rows } = await co.query(`INSERT INTO users 
@@ -72,6 +72,18 @@ module.exports = function (pool) {
                 throw "Email address already validated"
             }
             return co.query("UPDATE users SET validated=true WHERE user_id=$1", [user_id])
-        }
+        },
+        hasPasswordAuth: function (user_id) {
+            return co.query("SELECT 1 FROM password WHERE user_id=$1", [user_id])
+        },
+        getAuthenticators: function (user_id) {
+            return co.query(`SELECT "name", "fmt", "counter", "publicKey", "credID" from authenticators WHERE user_id=$1`, [user_id])
+        },
+        identifyByPassword: function (user_id, password) {
+            return co.query(`SELECT 1 FROM password WHERE user_id=$1 AND hashed=$2`, [
+                user_id,
+                hmac(password),
+            ])
+        },
     }
 }

@@ -1,0 +1,38 @@
+{
+    "body": {
+        "description": "Route to get auth system stored for the user",
+        "type": "object",
+        "properties": {
+            "login": {
+                "type": "string"
+            }
+        }
+    },
+    "response": {
+        "200": {
+            "description": "Returns username, flag to enable password authentication and/or list of stored authenticators IDs",
+            "type": "object",
+            "properties": {
+                "login": { "type": "string" },
+                "passwordEnabled": { "type": "boolean" },
+                "assertion": { 
+                    "description": "Assertion to prove private-key ownership",
+                    "type": "object",
+                    "properties": {
+                        "challenge": {
+                            "type": "string",
+                            "description": "Random to sign to prove ownership"
+                        },
+                        "allowCredentials": {
+                            "description": "List of authenticator infos for the browser",
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

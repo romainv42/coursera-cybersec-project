@@ -26,6 +26,22 @@ export default {
                 login,
             }
         })
+    },
+    signIn: (login) => {
+        return securedRequest({
+            url: "/api/users/sign-in",
+            method: "post",
+            body: {
+                login,
+            }
+        })
+    },
+    identify: (credentials) => {
+        return securedRequest({
+            url: "/api/users/identify",
+            method: "post",
+            body: credentials,
+        })
     }
 }
 

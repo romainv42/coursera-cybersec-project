@@ -59,11 +59,11 @@ function generateServerMakeCredRequest(rp, username, displayName, id) {
 function generateServerGetAssertion(authenticators) {
     const allowCredentials = authenticators.map(authr => ({
         type: publicKeyType,
-        id: base64url.toBuffer(authr.credID),
+        id: authr.credID,
         transports
     }))
     return {
-        challenge: crypto.randomBytes(32),
+        challenge: crypto.randomBytes(32).toString("base64"),
         allowCredentials
     }
 }
@@ -177,9 +177,9 @@ function verifyAuthenticatorAttestationResponse(webAuthnResponse) {
         if (verifySignature(signature, signatureBase, PEMCertificate)) {
             return {
                 fmt: 'fido-u2f',
-                publicKey: base64url.encode(publicKey),
+                publicKey: publicKey.toString("base64"),
                 counter: authrDataStruct.counter,
-                credID: base64url.encode(authrDataStruct.credID)
+                credID: authrDataStruct.credID.toString("base64")
             }
         }
     } else if (ctapMakeCredResp.fmt === 'packed' && ctapMakeCredResp.attStmt.hasOwnProperty('x5c')) {
@@ -228,9 +228,9 @@ function verifyAuthenticatorAttestationResponse(webAuthnResponse) {
         if (response.verified) {
             return {
                 fmt: 'fido-u2f',
-                publicKey: base64url.encode(publicKey),
+                publicKey: publicKey.toString("base64"),
                 counter: authrDataStruct.counter,
-                credID: base64url.encode(authrDataStruct.credID)
+                credID: authrDataStruct.credID.toString("base64")
             }
         }
     } else {
@@ -248,8 +248,7 @@ function verifyAuthenticatorAttestationResponse(webAuthnResponse) {
  * @return - found authenticator
  */
 function findAuthr(credID, authenticators) {
-    for (const authr of authenticators) if (authr.credID === credID) return authr
-    throw new Error(`Unknown authenticator with credID ${credID}!`)
+    return authenticators.find(({ credID: id}) => id === credID)
 }
 
 /**
@@ -273,6 +272,9 @@ function parseGetAssertAuthData(buffer) {
  * @param {Authenticator[]} authenticators */
 function verifyAuthenticatorAssertionResponse(webAuthnResponse, authrId, authenticators) {
     const authr = findAuthr(authrId, authenticators)
+    if (!authr) {
+        throw new Error(`Unknown authenticator with credID ${authrId}!`)
+    }
 
     if (authr.fmt === 'fido-u2f') {
         const authrDataStruct = parseGetAssertAuthData(base64url.toBuffer(webAuthnResponse.authenticatorData))

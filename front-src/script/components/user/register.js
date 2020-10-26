@@ -126,7 +126,7 @@ const chooseSecurityOption = {
         try {
 
             const user = await this[validMethod]()
-            console.log(user)
+
             this.onnext(user)
         } catch (e) {
             console.error("Some input error detected", e)

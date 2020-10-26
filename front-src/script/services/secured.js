@@ -17,8 +17,10 @@ const securedRequest = async (options) => {
         const token = currentXhr.getResponseHeader(CSRF_H_KEY)
         csrfToken = token
         return result
-    } catch (_) {
-        location.reload()
+    } catch (error) {
+        if (error.code === 412) {
+            location.reload()
+        }
     }
 }
 
