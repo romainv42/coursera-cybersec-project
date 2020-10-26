@@ -19,7 +19,7 @@ const {
 module.exports = async function (fastify) {
     const { dbHelper, csrf, mailer } = fastify
 
-    // fastify.addHook('onRequest', csrf.check)
+    fastify.addHook('onRequest', csrf.check)
 
     fastify.get("/exists", {
         schema: require("../schemas/users/exists.json")
@@ -92,7 +92,8 @@ module.exports = async function (fastify) {
 <h1>Welcome</h1>
 <p>Just one more step to use the messenger</P>
 <p>Click on the following link or copy and paste it in you browser</p>
-<p><a href="https://romainv42-capstone-project.herokuapp.com/from-email/${validationCode}">https://romainv42-capstone-project.herokuapp.com/from-email/${validationCode}</a>
+<p><a href="https://romainv42-capstone-project.herokuapp.com/from-email/${validationCode}">https://romainv42-capstone-project.herokuapp.com/from-email/${validationCode}</a></p>
+<p><i>This email expires in 24 hours.</i></p>
 `
         })
         res.status(201).send("User successfully registered")
@@ -102,14 +103,6 @@ module.exports = async function (fastify) {
         schema: require("../schemas/users/webauthn-challenge.json")
     }, async (req, res) => {
         const uid = randomBase64(32)
-        // const challenge = generateServerMakeCredRequest({
-        //     name: "Coursera Cybersecurity Capstone Project",
-        //     id: ORIGIN,
-        // }, req.body.login, req.body.login, uid)
-
-        // req.log.info(challenge)
-
-        // return challenge
         const challenge = randomBase64(32)
 
         req.session = {
