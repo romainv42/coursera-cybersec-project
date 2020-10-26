@@ -24,11 +24,19 @@ module.exports = function (pool) {
             `, [
                 user_id,
                 kind,
-                hmac(code),
+                hmac(code).toString("base64"),
                 deadTime,
             ])
 
             return code
         },
+        getEmail: function (code) {
+            if (!code) throw "Code missing"
+
+            return co.query("SELECT * FROM emails WHERE code = $1 AND not_after > $2", [
+                hmac(code).toString("base64"),
+                new Date(),
+            ])
+        }
     }
 }

@@ -36,7 +36,7 @@ module.exports = function (pool) {
                 if (authenticationMode === "PWD") {
                     await co.query(`INSERT INTO password  VALUES($1, $2)`, [
                         user_id,
-                        hmac(auth.password),
+                        hmac(auth.password).toString("base64"),
                     ])
                 } else if (authenticationMode === "WAN") {
                     await co.query(`INSERT INTO authenticators

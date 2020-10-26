@@ -1,4 +1,11 @@
 const queries = [
+    
+    `DROP TABLE IF EXISTS "public"."password"`,
+    `DROP TABLE IF EXISTS "public"."challenges"`,
+    `DROP TABLE IF EXISTS "public"."emails"`,
+    `DROP TABLE IF EXISTS "public"."authenticators"`,
+    `DROP TABLE IF EXISTS "public"."users"`,
+    
     `CREATE SEQUENCE IF NOT EXISTS  "Users_user_id_seq"  START 1`,
     `CREATE TABLE IF NOT EXISTS  "public"."users" (
         "user_id" integer DEFAULT nextval('"Users_user_id_seq"') NOT NULL,
@@ -13,7 +20,7 @@ const queries = [
         ) WITH (oids = false);`,
     `CREATE TABLE IF NOT EXISTS "public"."password" (
         "user_id" integer NOT NULL,
-        "hashed" bytea NOT NULL,
+        "hashed" text NOT NULL,
         CONSTRAINT "password_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
     ) WITH (oids = false);`,
     `CREATE TABLE IF NOT EXISTS "public"."challenges" (
@@ -33,9 +40,9 @@ const queries = [
         "user_id" integer NOT NULL,
         "name" integer NOT NULL,
         "fmt" character varying(32) NOT NULL,
-        "counter" integer NOT NULL,
-        "publicKey" bytea NOT NULL,
-        "credID" bytea NOT NULL,
+        "counter" integer NOT NULL, 
+        "publicKey" text NOT NULL,
+        "credID" text NOT NULL,
         CONSTRAINT "authenticators_user_id_name" PRIMARY KEY ("user_id", "name"),
         CONSTRAINT "authenticators_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
     ) WITH (oids = false);`

@@ -79,6 +79,9 @@ fastify.register(require("./routes/csrf"), { prefix: "/api/csrf" })
 // Configure route for user API
 fastify.register(require("./routes/users"), { prefix: "/api/users" })
 
+// Configure route for email verification
+fastify.register(require("./routes/email"), { prefix: "/from-email" })
+
 // Configure route for static files
 fastify.register(require("./routes/static"))
 

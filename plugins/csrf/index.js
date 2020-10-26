@@ -22,11 +22,11 @@ function csrf(fastify, _, done) {
         check: function (request, reply, next) {
             const token = request.headers[TOKEN_H_KEY]
             if (!token) {
-                return reply.status(400).send("missing CSRF token")
+                return reply.status(412).send("missing CSRF token")
             }
             const idx = tokens.indexOf(token)
             if (idx < 0) {
-                return reply.status(400).send("Bad CSRF token")
+                return reply.status(412).send("Bad CSRF token")
             }
             tokens.splice(idx, 1)
             reply.header(TOKEN_H_KEY, createCsrf())
