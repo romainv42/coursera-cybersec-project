@@ -226,7 +226,7 @@ function verifyAuthenticatorAttestationResponse(webAuthnResponse) {
             )
 
         if (response.verified) {
-            response.authrInfo = {
+            return {
                 fmt: 'fido-u2f',
                 publicKey: base64url.encode(publicKey),
                 counter: authrDataStruct.counter,

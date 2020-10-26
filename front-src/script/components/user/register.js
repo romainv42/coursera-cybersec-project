@@ -249,6 +249,8 @@ const chooseSecurityOption = {
                     You can use a dongle or your compatible smartphone. Try it.`,
                     ]),
                     ...(this.authenticationMode === "WAN" ? [
+                        m("p", "For the moment, only Chrome and Firefox browser on a computer have been tested successfully."),
+                        m("p", "I hope to have the time later to implement other platform."),
                         m(".center", [
                             ...(this.errors && this.errors.webauthn ?
                                 [
