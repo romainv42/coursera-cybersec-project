@@ -1,9 +1,9 @@
 const queries = [
-    `DROP TABLE IF EXISTS "public"."password"`,
-    `DROP TABLE IF EXISTS "public"."challenges"`,
-    `DROP TABLE IF EXISTS "public"."emails"`,
-    `DROP TABLE IF EXISTS "public"."authenticators"`,
-    `DROP TABLE IF EXISTS "public"."users"`,
+    // `DROP TABLE IF EXISTS "public"."password"`,
+    // `DROP TABLE IF EXISTS "public"."challenges"`,
+    // `DROP TABLE IF EXISTS "public"."emails"`,
+    // `DROP TABLE IF EXISTS "public"."authenticators"`,
+    // `DROP TABLE IF EXISTS "public"."users"`,
     `CREATE SEQUENCE IF NOT EXISTS  "Users_user_id_seq"  START 1`,
     `CREATE TABLE IF NOT EXISTS  "public"."users" (
         "user_id" integer DEFAULT nextval('"Users_user_id_seq"') NOT NULL,
