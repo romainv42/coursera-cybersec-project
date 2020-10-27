@@ -95,7 +95,7 @@ async function rsa(fastify, { secretPath, passphrase }) {
             const signature = crypto.createSign("sha256")
             signature.update(input)
             signature.end()
-            return signature.sign({ key: keyPair.privateKey, passphrase })
+            return signature.sign(keyPair.privateKey)
         },
         verify: (input, signature, { encoding }) => {
             const data = checkAndConvert(signature, encoding)
