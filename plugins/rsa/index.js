@@ -7,7 +7,7 @@ const fastifyPlugin = require("fastify-plugin")
 const RSA_SECRET = "rsa-secret.pem"
 const RSA_PUBLIC = "rsa-public.pem"
 
-async function rsa(fastify, { secretPath, passphrase }) {
+async function rsa(fastify, { secretPath, passphrase, private, public }) {
     // Check secretPath
 
     if (!fs.existsSync(secretPath)) {
@@ -21,55 +21,19 @@ async function rsa(fastify, { secretPath, passphrase }) {
 
     let keyPair
     // Check and load if key pair already exists
-    if (
-        !fs.existsSync(path.join(secretPath, RSA_PUBLIC)) ||
-        !fs.existsSync(path.join(secretPath, RSA_SECRET))
-    ) {
-        fastify.log.info("Creating the RSA Keypair")
-        try {
-            keyPair = crypto.generateKeyPairSync("rsa", {
-                modulusLength: 2048,
-                publicKeyEncoding: {
-                    type: 'spki',
-                    format: 'pem'
-                },
-                privateKeyEncoding: {
-                    type: 'pkcs8',
-                    format: 'pem',
-                    cipher: 'aes-256-cbc',
-                    passphrase: Buffer.from(passphrase, "base64"),
-                }
-            })
-            fs.writeFileSync(path.join(secretPath, RSA_SECRET), keyPair.privateKey, {
-                encoding: "ascii",
-                flag: "w",
-                mode: 0o400,
-            })
-            fs.writeFileSync(path.join(secretPath, RSA_PUBLIC), keyPair.publicKey, {
-                encoding: "ascii",
-                flag: "w",
-                mode: 0o400,
-            })
-        } catch (e) {
-            fastify.log.error(e)
-            throw "Unable to create the RSA keypair"
-        }
-    } else {
-        fastify.log.info("RSA files exist, loading it")
-        keyPair = {
-            privateKey: crypto.createPrivateKey({
-                key: fs.readFileSync(path.join(secretPath, RSA_SECRET), {
-                    encoding: "ascii",
-                    type: 'pkcs8',
-                    format: 'pem',
-                    cipher: 'aes-256-cbc',
-                }),
-                passphrase: Buffer.from(passphrase, "base64"),
-            }),
-            publicKey: crypto.createPublicKey(fs.readFileSync(path.join(secretPath, RSA_PUBLIC), { encoding: "ascii" })),
-        }
-    }
 
+    keyPair = {
+        privateKey: crypto.createPrivateKey({
+            key: private,
+            encoding: "ascii",
+            type: 'pkcs8',
+            format: 'pem',
+            cipher: 'aes-256-cbc',
+            passphrase: Buffer.from(passphrase, "base64"),
+        }),
+        publicKey: crypto.createPublicKey(public, { encoding: "ascii" }),
+    }
+   
     const checkAndConvert = (data, encoding) => {
         if (!Buffer.isBuffer(data)) {
             if (!encoding) {

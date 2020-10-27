@@ -11,6 +11,8 @@ const {
     SENDGRID_SENDER,
     HMAC,
     RSA_PASS,
+    RSA_PUBLIC,
+    RSA_PRIVATE,
 } = process.env
 
 const {
@@ -81,6 +83,8 @@ fastify.register(require("./plugins/csrf"))
 fastify.register(require("./plugins/rsa"), {
     secretPath: path.join(__dirname, "secrets"),
     passphrase: RSA_PASS,
+    private: RSA_PRIVATE || fs.readFileSync(path.join(__dirname, "secrets/rsa-private.pem"), { encoding: "ascii"}),
+    public: RSA_PUBLIC || fs.readFileSync(path.join(__dirname, "secrets/rsa-public.pem"), { encoding: "ascii"}),
 })
 
 // Initiate our JWT Helper using the RSA Helper

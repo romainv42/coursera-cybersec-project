@@ -27,6 +27,7 @@ openssl rand -base64 32
 
 - **RSA_PASS**: contains a passphrase to cipher the RSA private key before storing it on the storage. Cipher used is AES-256-GCM. You can generate it by using the same command as previous.
 
+Due to ephemeral storage of Heroku, RSA Keys are passed as environment variable. If these variables is missing, the server tries to load `secrets/rsa-public.pem` and `secrets/rsa-private.pem` files.
 
 - **POSTGRES_USER**: DB User
 - **POSTGRES_PASSWORD**: Its password
