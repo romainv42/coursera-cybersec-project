@@ -7,13 +7,7 @@ const fastifyPlugin = require("fastify-plugin")
 const RSA_SECRET = "rsa-secret.pem"
 const RSA_PUBLIC = "rsa-public.pem"
 
-async function rsa(fastify, { secretPath, passphrase, private, public }) {
-    // Check secretPath
-
-    if (!fs.existsSync(secretPath)) {
-        fastify.log.info("Creating the secret path")
-        fs.mkdirSync(secretPath, { recursive: true })
-    }
+async function rsa(fastify, { passphrase, private, public }) {
 
     if (!passphrase) {
         throw "Missing Passphrase"

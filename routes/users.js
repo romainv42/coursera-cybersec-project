@@ -242,6 +242,8 @@ module.exports = async function (fastify) {
     }, async (req, res) => {
         const { user_id, session_id } = req.user
         await dbHelper.session.logout(user_id, session_id)
-        res.status(204).clearCookie("token")
+        res.clearCookie("token")
+        res.status(204)
+        return
     })
 }

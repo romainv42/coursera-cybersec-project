@@ -81,7 +81,6 @@ fastify.register(require("./plugins/csrf"))
 
 // Initiate our RSA Helper
 fastify.register(require("./plugins/rsa"), {
-    secretPath: path.join(__dirname, "secrets"),
     passphrase: RSA_PASS,
     private: RSA_PRIVATE || fs.readFileSync(path.join(__dirname, "secrets/rsa-private.pem"), { encoding: "ascii"}),
     public: RSA_PUBLIC || fs.readFileSync(path.join(__dirname, "secrets/rsa-public.pem"), { encoding: "ascii"}),
