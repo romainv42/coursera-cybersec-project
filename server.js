@@ -20,7 +20,7 @@ const {
 
 const fastify = require("fastify")({
     logger: {
-        prettyPrint: !(NODE_ENV === "production")
+        prettyPrint: true
     },
     ...(NODE_ENV === "production" || {
         https: {

@@ -19,19 +19,7 @@ async function rsa(fastify, { secretPath, passphrase }) {
         throw "Missing Passphrase"
     }
 
-    if (fs.existsSync(path.join(secretPath, RSA_PUBLIC))
-    ) {
-        console.log("delete old rsa pub key")
-        fs.unlinkSync(path.join(secretPath, RSA_PUBLIC))
-    }
-
-    if (fs.existsSync(path.join(secretPath, RSA_SECRET))) {
-        console.log("delete old rsa prv key")
-        fs.unlinkSync(path.join(secretPath, RSA_SECRET))
-    }
-
-
-        let keyPair
+    let keyPair
     // Check and load if key pair already exists
     if (
         !fs.existsSync(path.join(secretPath, RSA_PUBLIC)) ||
