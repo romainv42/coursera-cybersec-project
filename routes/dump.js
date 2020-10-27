@@ -50,13 +50,10 @@ module.exports = async function (fastify) {
 `)
 
         }
-        console.log("finish dump")
 
-        // res.status(204)
         res.header("Content-Type", "text/tsv")
             .header("Content-Disposition", "attachment; filename=dump.tsv")
             .send(duplex)
         duplex.end()
-
     })
 }
