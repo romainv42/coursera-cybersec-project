@@ -85,5 +85,8 @@ module.exports = function (pool) {
                 hmac(password),
             ])
         },
+        getLoginById: function (user_id) {
+            return co.query(`SELECT login FROM users WHERE user_id=$1`, [user_id])
+        }
     }
 }

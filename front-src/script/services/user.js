@@ -42,6 +42,18 @@ export default {
             method: "post",
             body: credentials,
         })
+    },
+    checkCookie: () => {
+        return m.request({
+            url: "/api/cookie/check",
+            method: "get",
+        })
+    },
+    logout: () => {
+        return securedRequest({
+            url: "/api/users/logout",
+            method: "get",
+        })
     }
 }
 

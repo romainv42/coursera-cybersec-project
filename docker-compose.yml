@@ -6,6 +6,7 @@ services:
       - capstone-nw
     volumes:
       - ./__data:/var/lib/postgresql/data
+    env_file: .env
   adminer:
     image: adminer
     ports:
@@ -13,8 +14,10 @@ services:
     networks:
       - capstone-nw
   
-  webapp-dev:
-    image: node:14-alpine
+  webapp:
+    build:
+      context: .
+    env_file: .env
     networks:
       - capstone-nw
     volumes:

@@ -47,7 +47,7 @@ const queries = [
     ) WITH (oids = false);`,
     `CREATE TABLE IF NOT EXISTS "sessions" (
         "user_id" integer NOT NULL,
-        "session_id" character varying NOT NULL,
+        "session_id" character varying(44) NOT NULL,
         "expiration" timestamp NOT NULL,
         CONSTRAINT "sessions_session_id" PRIMARY KEY ("session_id"),
         CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE

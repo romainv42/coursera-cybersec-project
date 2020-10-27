@@ -302,7 +302,7 @@ const registeringProcess = {
                 m("p", "Success! You'll receive an email soon to validate your address."),
             ])
         }
-    }
+    },
 }
 
 /**
@@ -347,6 +347,9 @@ const Register = {
                 ),
             ]),
         ])
+    },
+    onbeforeremove: function () {
+        this.currentUser = null
     }
 }
 

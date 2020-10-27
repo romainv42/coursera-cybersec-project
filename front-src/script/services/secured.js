@@ -4,6 +4,7 @@ const CSRF_H_KEY = "x-csrf-token"
     ;
 
 const securedRequest = async (options) => {
+    const jwtToken = sessionStorage.getItem("token")
     let currentXhr
     try {
         const result = await m.request({
@@ -11,6 +12,7 @@ const securedRequest = async (options) => {
             headers: {
                 ...(options.headers || {}),
                 [CSRF_H_KEY]: csrfToken,
+                ...(!jwtToken || { authorization: `Bearer ${jwtToken}`})
             },
             config: (xhr) => currentXhr = xhr,
         })
@@ -20,6 +22,12 @@ const securedRequest = async (options) => {
     } catch (error) {
         if (error.code === 412) {
             location.reload()
+        }
+        if (error.code === 401) {
+            m.route.set("/disconnected")
+            if (jwtToken) {
+                sessionStorage.removeItem("token")
+            }
         }
     }
 }

@@ -5,6 +5,10 @@ body {
 header {
     padding: 8px 8px 16px 8px;
     background-color: #cacaca;
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+    justify-content: space-between;
 }
 
 h1 {
@@ -21,6 +25,14 @@ h3 {
 
 h4 {
     font-size: 1.4rem;
+}
+
+h5 {
+    font-size: 1.2rem;
+}
+
+h6 {
+    font-size: 1.0rem;
 }
 
 main {
@@ -64,4 +76,9 @@ input, textarea {
 
 .center {
     text-align: center;
+}
+
+nav li {
+    padding: 4px 4px 8px 0;
+    border-top: solid 1px #fff;
 }

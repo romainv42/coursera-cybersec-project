@@ -16,15 +16,17 @@ POSTGRES_PASSWORD=dev-pwd
 POSTGRES_USER=dev-user
 POSTGRES_DB=capstone
 POSTGRES_SERVER=database
-HMAC=LqntbFvXfP1CGPQeOapV3SXAxSdartx8j62+enxCMXQ=
-
+HMAC=AAAAAAAAAAAAAAAAAAAAAAAAA=
+RSA_PASS=AAAAAAAAAAAAAAAAAAAAAAAAA=
 ```
 
-- **HMAC**: contains a key to generate the cryptographic HMAC hash. You can use the one provided in `.env` file or replace it using the following command: 
-
+- **HMAC**: contains a key to generate the cryptographic HMAC hash. You can generate one using the following command: 
 ```
 openssl rand -base64 32
 ```
+
+- **RSA_PASS**: contains a passphrase to cipher the RSA private key before storing it on the storage. Cipher used is AES-256-GCM. You can generate it by using the same command as previous.
+
 
 - **POSTGRES_USER**: DB User
 - **POSTGRES_PASSWORD**: Its password
@@ -49,3 +51,6 @@ Otherwise you need to install:
 - Postgres
 - NodeJS and NPM
 
+## API Documentation
+
+API Documentation is accessible at the address: `/documentation`

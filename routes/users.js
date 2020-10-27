@@ -17,7 +17,7 @@ const {
 } = require("../utils/webauthn")
 
 module.exports = async function (fastify) {
-    const { dbHelper, csrf, mailer } = fastify
+    const { dbHelper, csrf, mailer, jwt } = fastify
 
     fastify.addHook('onRequest', csrf.check)
 
@@ -204,6 +204,44 @@ module.exports = async function (fastify) {
                 error: "A Password or authenticator object is required"
             }
         }
-        return identified
+        
+        if (!identified) {
+            throw {
+                statusCode: 400,
+                error: "Unable to authenticate the user"
+            }
+        }
+        req.log.info("User successfully identified")
+
+        const expiration = remember ? WEEK_EXPIRES : H24_EXPIRES
+        const deadTime = new Date(Date.now() + expiration)
+        const session_id = await dbHelper.session.create(user_id, deadTime)
+        if (!session_id) {
+            throw "Unable to create session in DB"
+        }
+
+        const token = jwt.generate({
+            user_id,
+            session_id
+        }, expiration)
+
+        if (!remember) {
+            return { token, username }
+        }
+        res.setCookie("token", token, {
+            domain: ORIGIN,
+            path: "/",
+            expires: deadTime,
+            sameSite: "strict",
+            secure: true
+        }).status(200).send({ username })
+    })
+
+    fastify.get("/logout", {
+        preValidation: [jwt.verifyHook],
+    }, async (req, res) => {
+        const { user_id, session_id } = req.user
+        await dbHelper.session.logout(user_id, session_id)
+        res.status(204).clearCookie("token")
     })
 }

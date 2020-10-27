@@ -1,3 +1,4 @@
+import { Menu } from "../menu"
 /**
  * Simple CSS loader
  */
@@ -14,28 +15,26 @@ const Loader = {
     ])
 }
 
-/**
- * Welcome page
- */
-const Welcome = {
-    view: () => m(".welcome", [
-        m("h2", "Welcome to my Capstone Project"),
-        m("p", "This project is develop as part of the ",
-            m("a", { href: "https://www.coursera.org/specializations/cyber-security" }, "Coursera Cybersecurity specialization of the University of the Maryland."),
-        ),
-        m("p", "To validate the specialization, the Capstone project consists on a simple messaging system."),
-        m("p", "This is my implementation of this project and you can find the source code on ",
-            m("a", { href: "https://github.com/romainv42/coursera-cybersec-project" }, "Github")
-        ),
-        m("p", [
-            m(m.route.Link, { href: "/sign", }, "Sign in"),
-            m("span", " | "),
-            m(m.route.Link, { href: "/register" }, "Create account"),
-        ])
+const header = {
+    view: () => m("header", [
+        m(".title", [
+            m("h1", [
+                m("i.far.fa-comments"),
+                "Capstone project",
+            ]),
+            m("h5", "Cybersecurity Specialization - University of Maryland - Coursera"),
+        ]),
+        m(Menu),
     ])
+}
+
+const Layout = {
+    view: ({ children }) => {
+        return [m(header), m("main", children)]
+    }
 }
 
 export {
     Loader,
-    Welcome,
+    Layout,
 }

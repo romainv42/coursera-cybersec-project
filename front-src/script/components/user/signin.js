@@ -1,4 +1,5 @@
 import Services from "../../services"
+import store from "../../store"
 /**
  * Sign In component
  */
@@ -24,7 +25,7 @@ const Signin = {
                 this.passwordMode = true
                 return
             }
-            console.log(result)
+            
             const { assertion } = result
             assertion.challenge = Uint8Array.from(window.atob(result.assertion.challenge), c => c.charCodeAt(0))
             assertion.allowCredentials = result.assertion.allowCredentials.map(({ id, ...rest }) => ({
@@ -68,8 +69,14 @@ const Signin = {
 
         if (credentials) {
             try {
-                await Services.Users.identify(credentials)
+                const { token, username } = await Services.Users.identify(credentials)
+                if (token) {
+                    sessionStorage.setItem("token", token)
+                }
+                store.User = { username, isLogged: true }
+                m.route.set("/")
             } catch (e) {
+                console.error(e)
                 this.error = "Wrong authentication, please try again"
             }
         }

@@ -13,6 +13,7 @@ module.exports = {
             patterns: [
                 { from: './front-src/index.html', to: './' },
                 { from: './front-src/css', to: './css' },
+                { from: './front-src/vendors', to: './vendors' },
             ],
         }),
     ],

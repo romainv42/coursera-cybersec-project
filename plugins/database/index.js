@@ -6,7 +6,7 @@ const { Client, Pool } = require("pg")
  * @param {*} fastify Fastify instance
  * @param {*} options Options containing db connection information
  */
-const databaseHelper = function (fastify, options, done) {
+async function databaseHelper (fastify, options) {
     const {
         connectionString,
         user,
@@ -35,10 +35,10 @@ const databaseHelper = function (fastify, options, done) {
     const helper = {
         users: require("./queries/user")(pool),
         emails: require("./queries/emails")(pool),
+        session: require("./queries/session")(pool),
     }
 
     fastify.decorate("dbHelper", helper)
-    done()
 }
 
 module.exports = fastifyPlugin(databaseHelper)

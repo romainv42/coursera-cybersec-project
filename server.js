@@ -10,7 +10,13 @@ const {
     SENDGRID_API_KEY,
     SENDGRID_SENDER,
     HMAC,
+    RSA_PASS,
 } = process.env
+
+const {
+    base64url,
+    randomBase64,
+} = require("./utils")
 
 const fastify = require("fastify")({
     logger: {
@@ -22,6 +28,20 @@ const fastify = require("fastify")({
             cert: fs.readFileSync('./secrets/localhost.crt')
         }
     })
+})
+
+// Initiate Helmet plugin
+fastify.register(require("fastify-helmet"), {
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "unpkg.com"],
+            styleSrc: ["'self'", "cdn.jsdelivr.net" ],
+            fontSrc: ["'self'"],
+            imgSrc: ["'self'", ],
+            upgradeInsecureRequests: [],
+        }
+    }
 })
 
 // Initiate plugin to serve static files
@@ -57,12 +77,23 @@ fastify.register(require("fastify-oas"), {
 // Initiate our CSRF protection plugin
 fastify.register(require("./plugins/csrf"))
 
+// Initiate our RSA Helper
+fastify.register(require("./plugins/rsa"), {
+    secretPath: path.join(__dirname, "secrets"),
+    passphrase: RSA_PASS,
+})
+
+// Initiate our JWT Helper using the RSA Helper
+fastify.register(require("./plugins/jwt"), {
+    issuer: "romainv42-capstone-project.herokuapp.com"
+})
+
+
 // Initiate our Mailer plugin
 fastify.register(require("./plugins/sendgrid"), {
     apiKey: SENDGRID_API_KEY,
     sender: SENDGRID_SENDER,
 })
-
 
 // Initiate our Database Helper Plugin
 fastify.register(require("./plugins/database"), {
@@ -78,6 +109,10 @@ fastify.register(require("./routes/csrf"), { prefix: "/api/csrf" })
 
 // Configure route for user API
 fastify.register(require("./routes/users"), { prefix: "/api/users" })
+
+// Configure route to check cookie
+fastify.register(require("./routes/cookie"), { prefix: "/api/cookie" })
+
 
 // Configure route for email verification
 fastify.register(require("./routes/email"), { prefix: "/from-email" })

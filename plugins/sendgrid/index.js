@@ -1,7 +1,7 @@
 const fastifyPlugin = require("fastify-plugin")
 const sgMail = require('@sendgrid/mail')
 
-const sendGrid = function (fastify, { apiKey, sender }, done) {
+async function sendGrid (fastify, { apiKey, sender }) {
     sgMail.setApiKey(apiKey)
 
     const mailer = {
@@ -14,7 +14,6 @@ const sendGrid = function (fastify, { apiKey, sender }, done) {
     }
 
     fastify.decorate("mailer", mailer)
-    done()
 }
 
 module.exports = fastifyPlugin(sendGrid)

@@ -9,7 +9,7 @@ const tokens = []
 
 const TOKEN_H_KEY = "x-csrf-token"
 
-function csrf(fastify, _, done) {
+async function csrf(fastify) {
     const createCsrf = function () {
         const token = base64url(randomBase64(16))
         tokens.push(token)
@@ -33,7 +33,6 @@ function csrf(fastify, _, done) {
             next()
         }
     })
-    done()
 }
 
 module.exports = fastifyPlugin(csrf)
