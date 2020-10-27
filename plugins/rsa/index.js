@@ -55,6 +55,7 @@ async function rsa(fastify, { secretPath, passphrase }) {
             throw "Unable to create the RSA keypair"
         }
     } else {
+        fastify.log.info("RSA files exist, loading it")
         keyPair = {
             privateKey: crypto.createPrivateKey({
                 key: fs.readFileSync(path.join(secretPath, RSA_SECRET), {
@@ -95,7 +96,7 @@ async function rsa(fastify, { secretPath, passphrase }) {
             const signature = crypto.createSign("sha256")
             signature.update(input)
             signature.end()
-            return signature.sign(keyPair.privateKey)
+            return signature.sign({ key: keyPair.privateKey, passphrase })
         },
         verify: (input, signature, { encoding }) => {
             const data = checkAndConvert(signature, encoding)
