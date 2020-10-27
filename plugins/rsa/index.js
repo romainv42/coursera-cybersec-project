@@ -59,6 +59,9 @@ async function rsa(fastify, { secretPath, passphrase }) {
             privateKey: crypto.createPrivateKey({
                 key: fs.readFileSync(path.join(secretPath, RSA_SECRET), {
                     encoding: "ascii",
+                    type: 'pkcs8',
+                    format: 'pem',
+                    cipher: 'aes-256-cbc',
                 }),
                 passphrase: Buffer.from(passphrase, "base64"),
             }),
@@ -86,13 +89,13 @@ async function rsa(fastify, { secretPath, passphrase }) {
         },
         decrypt: (input, { encoding }) => {
             const data = checkAndConvert(input, encoding)
-            return crypto.privateDecrypt(keyPair.privateKey, data)
+            return crypto.privateDecrypt({ key: keyPair.privateKey, passphrase }, data)
         },
         sign: (input) => {
             const signature = crypto.createSign("sha256")
             signature.update(input)
             signature.end()
-            return signature.sign(keyPair.privateKey)
+            return signature.sign({ key: keyPair.privateKey, passphrase })
         },
         verify: (input, signature, { encoding }) => {
             const data = checkAndConvert(signature, encoding)
