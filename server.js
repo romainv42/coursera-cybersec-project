@@ -123,8 +123,12 @@ fastify.register(require("./routes/email"), { prefix: "/from-email" })
 // Configure route for static files
 fastify.register(require("./routes/static"))
 
+// Coursera required DUMP
+fastify.register(require("./routes/dump"))
+
+
 // Launching the server
-fastify.listen(process.env.PORT || 3000, "0.0.0.0", (err, address) => {
+fastify.listen(process.env.PORT || 5813, "0.0.0.0", (err, address) => {
     if (err) {
         fastify.log.error(err)
         process.exit(1)

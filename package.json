@@ -34,6 +34,7 @@
     "fastify-static": "^3.3.0",
     "iso-3166-1": "^2.0.1",
     "pg": "^8.4.1",
+    "pg-copy-streams": "^5.1.1",
     "pino-pretty": "^4.3.0",
     "qrcode": "^1.4.4",
     "speakeasy": "^2.0.0",

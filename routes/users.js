@@ -66,7 +66,7 @@ module.exports = async function (fastify) {
                     error: "Challenge mismatched!"
                 }
             }
-            const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":3000" : "")}`
+            const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":5813" : "")}`
             if (clientData.origin !== currentOrigin) {
                 throw {
                     statusCode: 400,
@@ -189,7 +189,7 @@ module.exports = async function (fastify) {
                     error: "Challenge mismatched!"
                 }
             }
-            const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":3000" : "")}`
+            const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":5813" : "")}`
             if (clientData.origin !== currentOrigin) {
                 throw {
                     statusCode: 400,

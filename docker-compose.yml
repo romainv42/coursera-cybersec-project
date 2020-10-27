@@ -24,7 +24,7 @@ services:
       - .:/app
     working_dir: /app
     ports:
-      - "3000:3000"
+      - "5813:5813"
     command: npm run dev
 
 networks:

@@ -33,6 +33,7 @@ async function databaseHelper (fastify, options) {
     require("./queries/config")(pool).configure()
 
     const helper = {
+        dump: require("./queries/dump")(pool),
         users: require("./queries/user")(pool),
         emails: require("./queries/emails")(pool),
         session: require("./queries/session")(pool),
