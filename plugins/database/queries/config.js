@@ -1,9 +1,4 @@
 const queries = [
-    // `DROP TABLE IF EXISTS "public"."password"`,
-    // `DROP TABLE IF EXISTS "public"."challenges"`,
-    // `DROP TABLE IF EXISTS "public"."emails"`,
-    // `DROP TABLE IF EXISTS "public"."authenticators"`,
-    // `DROP TABLE IF EXISTS "public"."users"`,
     `CREATE SEQUENCE IF NOT EXISTS  "Users_user_id_seq"  START 1`,
     `CREATE TABLE IF NOT EXISTS  "public"."users" (
         "user_id" integer DEFAULT nextval('"Users_user_id_seq"') NOT NULL,
@@ -21,10 +16,6 @@ const queries = [
         "hashed" text NOT NULL,
         CONSTRAINT "password_user_id" PRIMARY KEY ("user_id"),
         CONSTRAINT "password_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
-    ) WITH (oids = false);`,
-    `CREATE TABLE IF NOT EXISTS "public"."challenges" (
-        "tempId" character varying(44) NOT NULL,
-        "challenge" character varying(44) NOT NULL
     ) WITH (oids = false);`,
     `CREATE SEQUENCE IF NOT EXISTS emails_email_id_seq START 1 ;`,
     `CREATE TABLE IF NOT EXISTS "public"."emails" (

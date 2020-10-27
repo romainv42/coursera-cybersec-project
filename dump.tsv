@@ -1,0 +1,72 @@
+
+-----------------------------------------
+             users                
+-----------------------------------------
+user_id	login	email	moreInfo	changePassword	validated	
+1	test	test@test.com		false	true
+2	romainv42	test@romain.viau.dev		false	true
+
+-----------------------------------------
+        END OF users                
+-----------------------------------------
+
+
+-----------------------------------------
+             sessions                
+-----------------------------------------
+user_id	session_id	expiration	
+1	cZCNxl85LM9qBKMEaAZJNyJKuaqnkvRj+JzDFRsy9Q8=	Wed Oct 28 2020 07:30:54 GMT+0000 (Coordinated Universal Time)
+1	PuKl9bUeR7Au+i3I6CGur9mmwpLJmPmNGXfvJ1KLtnY=	Wed Oct 28 2020 07:32:52 GMT+0000 (Coordinated Universal Time)
+1	OexWnmdVnv83aCEfZwasHlfc8xrhhmjQgS5ACfhmzQ0=	Wed Oct 28 2020 07:33:58 GMT+0000 (Coordinated Universal Time)
+2	rzBpXgJTQe7hffUN7iBs6lvUdxNXtfg/IyQifCN5rTI=	Wed Oct 28 2020 07:35:18 GMT+0000 (Coordinated Universal Time)
+2	ptSqIKxZ0Rh0k+bEe/y5JmgELmM9nfUqEGt0V6CtGRg=	Tue Nov 03 2020 07:35:28 GMT+0000 (Coordinated Universal Time)
+2	Y/kxDlqwlMhz7J9PAFMYRK5tzRduwG4FLD26nWO86wc=	Tue Nov 03 2020 07:36:23 GMT+0000 (Coordinated Universal Time)
+2	bFmtHkmX0Q5zbCmBl1EVgQFWmheh3ksafGLOYhEywKk=	Tue Nov 03 2020 08:52:45 GMT+0000 (Coordinated Universal Time)
+2	9KSZNLBKT+L+d/Oo8xoAkIUG1GGypvJhkEizu1QpVRQ=	Wed Oct 28 2020 10:33:38 GMT+0000 (Coordinated Universal Time)
+2	hFXSF1wV4gO4J7vj7bbVEMwSmGYRWnnx4nqSJID8AZ8=	Wed Oct 28 2020 10:33:43 GMT+0000 (Coordinated Universal Time)
+2	h1NVHqQmZuCfYuZiX/jCClsymDsz0OvaGVLzCUaYQMw=	Wed Oct 28 2020 10:34:37 GMT+0000 (Coordinated Universal Time)
+2	57ZVeXJFoqCcruuMKcYh13q4WD3Z4eYRFGn38+51Ja8=	Wed Oct 28 2020 10:35:18 GMT+0000 (Coordinated Universal Time)
+1	X4+gO/hQnvneFbntPQ8sNfGI5suqIuvTlZl7h2N5Z2k=	Tue Nov 03 2020 10:38:00 GMT+0000 (Coordinated Universal Time)
+1	wg9HbzIfXaqQRpgUW/bYuYl2qYaxJg+sba4wpdL315c=	Tue Nov 03 2020 10:40:21 GMT+0000 (Coordinated Universal Time)
+2	KwQx9ha8WptCRzyCi9g2z0AC8yi8Euc1kS1uPITgC/w=	Wed Oct 28 2020 10:56:33 GMT+0000 (Coordinated Universal Time)
+2	ntis1fulTkmRTWx/zZzqajjUHosUaCBwoP0wWBeRXos=	Wed Oct 28 2020 12:00:09 GMT+0000 (Coordinated Universal Time)
+2	qwcf2S4xo53iKDQRAJGiVJOUYOsC2N9eq/krMx27FAk=	Wed Oct 28 2020 12:21:36 GMT+0000 (Coordinated Universal Time)
+
+-----------------------------------------
+        END OF sessions                
+-----------------------------------------
+
+
+-----------------------------------------
+             password                
+-----------------------------------------
+user_id	hashed	
+1	DuHzPFjo/WdCpLIXg6mC/pHgNpjsMr6AS4VMFrShceA=
+
+-----------------------------------------
+        END OF password                
+-----------------------------------------
+
+
+-----------------------------------------
+             emails                
+-----------------------------------------
+email_id	user_id	kind	code	not_after	
+1	1	VALID	iUJpD5nceVOb7JsKM2UAbjfDyNuKZ4XE8QmT89iVV78=	Tue Oct 27 2020 17:49:23 GMT+0000 (Coordinated Universal Time)
+2	2	VALID	RP9j4FrD0Y1LMA1yfOhOKI4keZ7b97b8W5H1m2sol8s=	Tue Oct 27 2020 18:00:18 GMT+0000 (Coordinated Universal Time)
+
+-----------------------------------------
+        END OF emails                
+-----------------------------------------
+
+
+-----------------------------------------
+             authenticators                
+-----------------------------------------
+user_id	name	fmt	counter	publicKey	credID	
+2	Registration	fido-u2f	0	BI73ewgucoCmJ7N5jbZxuWcdt0Eljl7/pzyztbIxpWlmJOCLVKZb+lyJ5fgKhJy/y1QHaWRj8MUjinqWmBBN4PQ=	MbtV3DPQa4InLJXEN9afYsHQpKYdLiipvDKUu+qAz7okcYMEUQgGj3QBhKUpJByzy53m1Bnmn7RN9l7ZpNHHcQ==
+
+-----------------------------------------
+        END OF authenticators                
+-----------------------------------------
+
