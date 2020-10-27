@@ -15,7 +15,21 @@ async function rsa(fastify, { secretPath, passphrase }) {
         fs.mkdirSync(secretPath, { recursive: true })
     }
 
-    let keyPair
+    if (!passphrase) {
+        throw "Missing Passphrase"
+    }
+
+    if (fs.existsSync(path.join(secretPath, RSA_PUBLIC))
+    ) {
+        fs.unlinkSync(path.join(secretPath, RSA_PUBLIC))
+    }
+
+    if (fs.existsSync(path.join(secretPath, RSA_SECRET))) {
+        fs.unlinkSync(path.join(secretPath, RSA_SECRET))
+    }
+
+
+        let keyPair
     // Check and load if key pair already exists
     if (
         !fs.existsSync(path.join(secretPath, RSA_PUBLIC)) ||
@@ -80,7 +94,7 @@ async function rsa(fastify, { secretPath, passphrase }) {
                 padding: crypto.constants.RSA_NO_PADDING,
             }, data)
         },
-        decrypt: (input, { encoding }) =>  {
+        decrypt: (input, { encoding }) => {
             const data = checkAndConvert(input, encoding)
             return crypto.privateDecrypt(keyPair.privateKey, data)
         },
