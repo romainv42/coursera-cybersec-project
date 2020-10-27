@@ -12,7 +12,7 @@ async function rsa(fastify, { secretPath, passphrase }) {
 
     if (!fs.existsSync(secretPath)) {
         fastify.log.info("Creating the secret path")
-        fs.mkdir(secretPath, { recursive: true })
+        fs.mkdirSync(secretPath, { recursive: true })
     }
 
     let keyPair
