@@ -14,6 +14,7 @@ import { Inbox } from "./components/inbox"
 const root = document.getElementById("rvapp")
     ;
 (async function init() {
+    m.route.prefix = ""
     try {
         await crsfInit()
         const result = await Services.Users.checkCookie()
@@ -22,7 +23,6 @@ const root = document.getElementById("rvapp")
     } catch (e) {
         
     } finally {
-        m.route.prefix = ""
         m.route(root, "/", {
             "/": { render: () => m(Layout, m(Welcome)) },
             "/sign": { render: () => m(Layout, m(Signin)) },
