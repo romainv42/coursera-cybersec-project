@@ -28,7 +28,7 @@ const securedRequest = async (options) => {
             if (jwtToken) {
                 sessionStorage.removeItem("token")
             }
-            location = "/disconnect"
+            m.route.set("/disconnect")
         }
     }
 }
