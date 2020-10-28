@@ -231,12 +231,12 @@ module.exports = async function (fastify) {
         if (!remember) {
             return { token, username }
         }
-        res.setCookie("token", token, {
+        res.setCookie("capstone-token", token, {
             domain: ORIGIN,
             path: "/",
             expires: deadTime,
             sameSite: "strict",
-            secure: true
+            secure: true,
         }).status(200).send({ username })
     })
 

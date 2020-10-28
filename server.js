@@ -13,6 +13,11 @@ const {
     RSA_PASS,
     RSA_PUBLIC,
     RSA_PRIVATE,
+    SMTP_SERVER,
+    SMTP_PORT,
+    SMTP_USER,
+    SMTP_PASSWORD,
+    SENDER,
 } = process.env
 
 const {
@@ -38,9 +43,9 @@ fastify.register(require("fastify-helmet"), {
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "unpkg.com"],
-            styleSrc: ["'self'", "cdn.jsdelivr.net" ],
+            styleSrc: ["'self'", "cdn.jsdelivr.net"],
             fontSrc: ["'self'"],
-            imgSrc: ["'self'", ],
+            imgSrc: ["'self'",],
             upgradeInsecureRequests: [],
         }
     }
@@ -82,8 +87,8 @@ fastify.register(require("./plugins/csrf"))
 // Initiate our RSA Helper
 fastify.register(require("./plugins/rsa"), {
     passphrase: RSA_PASS,
-    private: RSA_PRIVATE || fs.readFileSync(path.join(__dirname, "secrets/rsa-private.pem"), { encoding: "ascii"}),
-    public: RSA_PUBLIC || fs.readFileSync(path.join(__dirname, "secrets/rsa-public.pem"), { encoding: "ascii"}),
+    private: RSA_PRIVATE || fs.readFileSync(path.join(__dirname, "secrets/rsa-private.pem"), { encoding: "ascii" }),
+    public: RSA_PUBLIC || fs.readFileSync(path.join(__dirname, "secrets/rsa-public.pem"), { encoding: "ascii" }),
 })
 
 // Initiate our JWT Helper using the RSA Helper
@@ -95,9 +100,16 @@ fastify.register(require("./plugins/jwt"), {
 fastify.register(require("./plugins/aes"))
 
 // Initiate our Mailer plugin
-fastify.register(require("./plugins/sendgrid"), {
-    apiKey: SENDGRID_API_KEY,
-    sender: SENDGRID_SENDER,
+// fastify.register(require("./plugins/mailer/sendgrid"), {
+//     apiKey: SENDGRID_API_KEY,
+//     sender: SENDGRID_SENDER,
+// })
+fastify.register(require("./plugins/mailer/smtp"), {
+    smtpServer:SMTP_SERVER,
+    smtpPort:SMTP_PORT,
+    authUser:SMTP_USER,
+    authPwd:SMTP_PASSWORD,
+    sender: SENDER,
 })
 
 // Initiate our Database Helper Plugin

@@ -122,7 +122,7 @@ nav li {
 
 .chat {
     border: solid 1px #aaaaaa;
-    border-radius: 10px;
+    border-radius: 12px;
     min-height: 200px;
     overflow-y: scroll;
     padding: 16px;
@@ -144,7 +144,7 @@ nav li {
 
 .message {
     display: inline-block;
-    padding: 16px;
+    padding: 12px;
     max-width: 75%;
     border-radius: 24px;
 }

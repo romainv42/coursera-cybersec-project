@@ -14,14 +14,28 @@ import { Disconnected } from "./components/disconnected"
 
 const root = document.getElementById("rvapp")
     ;
+
+const cookieParser = () => document.cookie.split(';')
+    .map(c => {
+        const name = c.splice(0, c.indexOf("="))
+        return {
+            [name.trim()]: c
+        }
+    })
+    .reduce((a, c) => ({ ...a, ...c }), {})
+    ;
+
 (async function init() {
+    m.route.prefix = ""
     try {
         await crsfInit()
-        const result = await Services.Users.checkCookie()
-        store.User.username = result.username
-        store.User.isLogged = true
+        console.log(sessionStorage.getItem("token"))
+        if (sessionStorage.getItem("token") || cookieParser()["capstone-token"]) {
+            const result = await Services.Users.checkCookie()
+            store.User.username = result.username
+            store.User.isLogged = true
+        }
     } catch (e) {
-        
     } finally {
         m.route(root, "/", {
             "/": { render: () => m(Layout, m(Welcome)) },
