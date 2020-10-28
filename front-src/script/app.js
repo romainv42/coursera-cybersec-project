@@ -15,7 +15,6 @@ import { Disconnected } from "./components/disconnected"
 const root = document.getElementById("rvapp")
     ;
 (async function init() {
-    m.route.prefix = ""
     try {
         await crsfInit()
         const result = await Services.Users.checkCookie()
