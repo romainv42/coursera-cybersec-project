@@ -1,6 +1,6 @@
 {
+    "description": "Route to get auth system stored for the user",
     "body": {
-        "description": "Route to get auth system stored for the user",
         "type": "object",
         "properties": {
             "login": {

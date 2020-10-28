@@ -16,6 +16,7 @@ const securedRequest = async (options) => {
             },
             config: (xhr) => currentXhr = xhr,
         })
+
         const token = currentXhr.getResponseHeader(CSRF_H_KEY)
         csrfToken = token
         return result
@@ -24,17 +25,18 @@ const securedRequest = async (options) => {
             location.reload()
         }
         if (error.code === 401) {
-            m.route.set("/disconnected")
             if (jwtToken) {
                 sessionStorage.removeItem("token")
             }
+            location = "/disconnect"
         }
     }
 }
 
-(() => securedRequest({
-    url: "/api/csrf",
-    method: "get",
-}))()
-
 export default securedRequest
+export function crsfInit() {
+    return securedRequest({
+        url: "/api/csrf",
+        method: "get",
+    })
+}

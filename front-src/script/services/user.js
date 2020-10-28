@@ -44,7 +44,7 @@ export default {
         })
     },
     checkCookie: () => {
-        return m.request({
+        return securedRequest({
             url: "/api/cookie/check",
             method: "get",
         })

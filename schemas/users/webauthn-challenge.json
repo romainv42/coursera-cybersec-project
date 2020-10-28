@@ -1,6 +1,6 @@
 {
+    "description": "Route that generate challenge and user id, combined to default values for WebAuthN Credentials",
     "body": {
-        "description": "Route that generate challenge and user id, combined to default values for WebAuthN Credentials",
         "type": "object",
         "properties": {
             "login": {

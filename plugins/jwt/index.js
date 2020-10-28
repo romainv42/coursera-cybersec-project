@@ -58,7 +58,7 @@ async function jwt(fastify, { issuer }) {
             const signature = fastify.rsa.sign(unsigned)
             return `${unsigned}.${base64url(signature.toString("base64"))}`
         },
-        verifyHook: async (request, reply, next) => {
+        verifyHook: async (request, reply) => {
             let token
             try {
                 if (request.headers.authorization) {
@@ -76,7 +76,7 @@ async function jwt(fastify, { issuer }) {
                     throw "No session found or it expired"
                 }
                 request.user = { user_id, session_id }
-                next()
+                return
             } catch (e) {
                 request.log.info(`Not authorized. Cause: ${e}`)
                 reply.status(401).send({ error: e })

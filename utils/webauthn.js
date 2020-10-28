@@ -291,7 +291,7 @@ function verifyAuthenticatorAssertionResponse(webAuthnResponse, authrId, authent
         if (verifySignature(signature, signatureBase, publicKey)) {
             if (authrDataStruct.counter <= authr.counter) throw new Error('Authr counter did not increase!')
             authr.counter = authrDataStruct.counter
-            return true
+            return authr
         }
     }
 

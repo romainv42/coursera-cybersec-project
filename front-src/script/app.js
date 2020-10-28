@@ -1,3 +1,4 @@
+import { crsfInit } from "./services/secured"
 import Services from "./services"
 import store from "./store"
 import { Register, Signin } from "./components/user"
@@ -8,11 +9,13 @@ import {
     WrongEmail,
 } from "./components/emails"
 import { Logout } from "./components/logout"
+import { Inbox } from "./components/inbox"
 
 const root = document.getElementById("rvapp")
     ;
 (async function init() {
     try {
+        await crsfInit()
         const result = await Services.Users.checkCookie()
         store.User.username = result.username
         store.User.isLogged = true
@@ -27,6 +30,7 @@ const root = document.getElementById("rvapp")
             "/email-verified": { render: () => m(Layout, m(EmailVerified)) },
             "/wrong-email": { render: () => m(Layout, m(WrongEmail)) },
             "/logout": { render: () => m(Layout, m(Logout)) },
+            "/inbox": { render: () => m(Layout, m(Inbox)) },
         })
     }
 })()
