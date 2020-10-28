@@ -17,8 +17,6 @@ const securedRequest = async (options) => {
             config: (xhr) => currentXhr = xhr,
         })
 
-        const token = currentXhr.getResponseHeader(CSRF_H_KEY)
-        csrfToken = token
         return result
     } catch (error) {
         if (error.code === 412) {
@@ -30,6 +28,9 @@ const securedRequest = async (options) => {
             }
             m.route.set("/disconnect")
         }
+    } finally {
+        const token = currentXhr.getResponseHeader(CSRF_H_KEY)
+        csrfToken = token
     }
 }
 
