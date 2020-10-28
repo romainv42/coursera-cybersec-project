@@ -176,8 +176,8 @@ module.exports = async function (fastify) {
 
         let identified = false
         if (password) {
-            const { rows } = await dbHelper.users.identifyByPassword(user_id, password)
-            identified = rows && rows.length
+            const { rows: pwd } = await dbHelper.users.identifyByPassword(user_id, password)
+            identified = pwd && pwd.length
         } else if (authenticator) {
             const { rows: authenticators } = await dbHelper.users.getAuthenticators(user_id)
 
@@ -198,6 +198,9 @@ module.exports = async function (fastify) {
             }
 
             identified = verifyAuthenticatorAssertionResponse(authenticator.response, authenticator.rawId, authenticators)
+            if (identified) {
+                await dbHelper.users.updateAuthr(user_id, identified)
+            }
         } else {
             throw {
                 statusCode: 400,

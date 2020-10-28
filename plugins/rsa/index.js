@@ -7,6 +7,11 @@ const fastifyPlugin = require("fastify-plugin")
 const RSA_SECRET = "rsa-secret.pem"
 const RSA_PUBLIC = "rsa-public.pem"
 
+const {
+    checkAndConvert,
+} = require("../../utils")
+
+
 async function rsa(fastify, { passphrase, private, public }) {
 
     if (!passphrase) {
@@ -28,22 +33,12 @@ async function rsa(fastify, { passphrase, private, public }) {
         publicKey: crypto.createPublicKey(public, { encoding: "ascii" }),
     }
    
-    const checkAndConvert = (data, encoding) => {
-        if (!Buffer.isBuffer(data)) {
-            if (!encoding) {
-                throw "Data must be a Buffer or a string with encoding option set!"
-            }
-            return Buffer.from(data, encoding)
-        }
-        return data
-    }
-
     const helper = {
         encrypt: (input, { encoding }) => {
             const data = checkAndConvert(input, encoding)
             return crypto.publicEncrypt({
                 key: keyPair.publicKey,
-                padding: crypto.constants.RSA_NO_PADDING,
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
             }, data)
         },
         decrypt: (input, { encoding }) => {

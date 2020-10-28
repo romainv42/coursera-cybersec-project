@@ -1,5 +1,6 @@
 module.exports = async function (fastify) {
-    const { jwt, dbHelper } = fastify
+    const { csrf, jwt, dbHelper } = fastify
+    fastify.addHook('onRequest', csrf.check)
 
     fastify.get("/check", {
         preValidation: [jwt.verifyHook],

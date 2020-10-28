@@ -62,6 +62,14 @@ module.exports = function (pool) {
                 throw e
             }
         },
+        updateAuthr: function (user_id, { counter, credID }) {
+            return co.query(`UPDATE authenticators SET counter=$1 
+                WHERE user_id=$2 AND "credID"=$3`, [
+                    counter,
+                    user_id,
+                    credID,
+            ])
+        },
         validateEmail: async function (user_id) {
             const { rows } = await co.query("SELECT validated FROM users WHERE user_id=$1", [user_id])
             if (!rows || !rows.length) {

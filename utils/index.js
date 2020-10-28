@@ -16,10 +16,21 @@ const hmac = (pwd) => {
         .update(pwd).digest("base64")
 }
 
+const checkAndConvert = (data, encoding) => {
+    if (!Buffer.isBuffer(data)) {
+        if (!encoding) {
+            throw "Data must be a Buffer or a string with encoding option set!"
+        }
+        return Buffer.from(data, encoding)
+    }
+    return data
+}
+
 
 module.exports = {
     base64url,
     randomBase64,
     hmac,
+    checkAndConvert,
 } 
 

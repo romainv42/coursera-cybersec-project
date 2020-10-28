@@ -43,6 +43,21 @@ const queries = [
         CONSTRAINT "sessions_session_id" PRIMARY KEY ("session_id"),
         CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
       );`,
+    `CREATE SEQUENCE IF NOT EXISTS messages_mesage_id_seq START 1;`,
+    `CREATE TABLE IF NOT EXISTS "public"."messages" (
+        "message_id" integer DEFAULT nextval('messages_message_id_seq') NOT NULL,
+        "content" text NOT NULL,
+        "read" boolean NOT NULL,
+        "from" integer NOT NULL,
+        "to" integer NOT NULL,
+        "key" text NOT NULL,
+        "iv" text NOT NULL,
+        "auth" text NOT NULL,
+        CONSTRAINT "messages_message_id" PRIMARY KEY ("message_id"),
+        CONSTRAINT "messages_from_fkey" FOREIGN KEY ("from") REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE,
+        CONSTRAINT "messages_to_fkey" FOREIGN KEY ("to") REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
+    ) WITH (oids = false);`
+
 ]
 
 /**

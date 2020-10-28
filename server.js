@@ -91,6 +91,8 @@ fastify.register(require("./plugins/jwt"), {
     issuer: "romainv42-capstone-project.herokuapp.com"
 })
 
+// Initiate our AES Helper
+fastify.register(require("./plugins/aes"))
 
 // Initiate our Mailer plugin
 fastify.register(require("./plugins/sendgrid"), {
@@ -116,9 +118,11 @@ fastify.register(require("./routes/users"), { prefix: "/api/users" })
 // Configure route to check cookie
 fastify.register(require("./routes/cookie"), { prefix: "/api/cookie" })
 
-
 // Configure route for email verification
 fastify.register(require("./routes/email"), { prefix: "/from-email" })
+
+// Configure route to manage messages
+fastify.register(require("./routes/messages"), { prefix: "/api/messages" })
 
 // Configure route for static files
 fastify.register(require("./routes/static"))
