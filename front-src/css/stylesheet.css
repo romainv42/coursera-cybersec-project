@@ -182,3 +182,8 @@ nav li {
 .forgot-password {
     padding: 24px;
 }
+
+.send-button {
+    width: 80px;
+    height: 80px;
+}

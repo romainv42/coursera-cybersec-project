@@ -1,9 +1,10 @@
 import Services from "../../services"
 import store from "../../store"
-
+import { Loader } from "../global"
 
 const messagesPanel = {
     message: null,
+    sending: false,
     oninit: function ({ attrs }) {
         this.onsent = attrs.onsent
     },
@@ -15,15 +16,24 @@ const messagesPanel = {
             console.error("missing contact ?!")
             return
         }
-        await Services.Messages.send(this.message, contact)
-        this.onsent(contact, {
-            recipient_login: contact,
-            sender_login: store.User.username,
-            content: {
-                message: this.message,
-                date: Date.now(),
-            }
-        })
+        try {
+            this.sending = true
+            await Services.Messages.send(this.message, contact)
+            this.onsent(contact, {
+                recipient_login: contact,
+                sender_login: store.User.username,
+                content: {
+                    message: this.message,
+                    date: Date.now(),
+                }
+            })
+            this.message = ""
+        } catch (e) {
+            console.error(e)
+
+        } finally {
+            this.sending = false
+        }
     },
     view: function ({ attrs }) {
         const { contact, contents } = attrs
@@ -55,7 +65,11 @@ const messagesPanel = {
                     value: this.message,
                     onchange: (e) => this.message = e.target.value,
                 }),
-                m("button[type=button].button.is-primary", { onclick: () => this.send(contact) }, "Send")
+                ...(this.sending ? [
+                    m(Loader),
+                ] : [
+                    m("button[type=button].button.is-primary.send-button", { onclick: () => this.send(contact) }, "Send"),
+                ])
             ])] : [
                     m("p", "Please select a contact")
                 ])
