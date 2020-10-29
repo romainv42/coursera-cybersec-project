@@ -161,7 +161,7 @@ nav li {
     display: inline-block;
     padding: 12px;
     max-width: 75%;
-    border-radius: 24px;
+    border-radius: 12px;
 }
 
 .message.as-sender {
