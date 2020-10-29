@@ -45,8 +45,10 @@ const messagesPanel = {
             ]),
             m(".chat", [
                 ...(!contents.length ? [m("i", `Start a new conversation with ${contact}`)] :
-                    [...contents.sort((a, b) => b.content.date < a.content.date)
-                        .map((c, idx) => m(".message", {
+                    [...contents.sort((a, b) => {
+                        console.log(a, b)
+                        b.content.date < a.content.date
+                    }).map((c, idx) => m(".message", {
                             key: `${contact}-${idx}`,
                             className: contact === c.recipient_login ? "as-sender" : "as-recipient"
                         }, [
