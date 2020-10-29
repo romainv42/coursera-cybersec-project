@@ -92,7 +92,7 @@ const ResetPassword = {
         }
 
         return {
-            password: this.newPassword,
+            newPassword: this.newPassword,
             confirmPwd: this.confirmPwd,
         }
     },
@@ -138,8 +138,6 @@ const ResetPassword = {
                             value: this.login,
                             onchange: (e) => {
                                 this.login = e.target.value
-                                this.password = null
-                                this.passwordMode = false
                             }
                         })
                     ]),
