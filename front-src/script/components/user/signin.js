@@ -9,6 +9,11 @@ const Signin = {
     login: null,
     password: null,
     resetSent: false,
+    deviceError: false,
+    passwordEnabled: false,
+    switchToPwdMode: function () {
+        this.passwordMode = true
+    },
     forgot: async function () {
         if (!this.login) return this.error = "Please enter anyway your username or your email address"
 
@@ -32,6 +37,9 @@ const Signin = {
                 return
             }
             this.username = result.login
+
+            this.passwordEnabled = result.passwordEnabled
+            
             if (!result.assertion) {
                 this.passwordMode = true
                 return
@@ -64,7 +72,8 @@ const Signin = {
                 }
             } catch (e) {
                 console.error(e)
-                this.error = "Invalid device!"
+                this.error = "Unable to authenticate the device!"
+                this.deviceError = true
                 return
             }
 
@@ -129,7 +138,12 @@ const Signin = {
                                     " Remember me? (Check it only if it is your personal device)"
                                 ]),
                             ),
-                            ...(this.error ? [m("p.error", this.error)] : []),
+                            ...(this.error ? [m("p.error", [
+                                this.error,
+                                ...(this.passwordEnabled && this.deviceError ? [
+                                    m("a", { onclick: () => this.switchToPwdMode() }, "Click here to switch to password mode"),
+                                ] : [])
+                            ])] : []),
                             m("button[type=submit].button.is-primary", "Next"),
                             m("br"),
                             m("button[type=button].button", { onclick: () => this.forgot() }, "Forgot password or lost device"),

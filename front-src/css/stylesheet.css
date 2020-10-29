@@ -187,3 +187,9 @@ nav li {
     width: 80px;
     height: 80px;
 }
+
+.my-account section {
+    margin-top: 16px;
+    border-top: solid 1px #cacaca;
+    padding: 8px;
+}

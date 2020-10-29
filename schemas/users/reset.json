@@ -54,21 +54,15 @@
                     ]
                 }
             },
-            "oneOf": {
-                "oldPassword": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "allOf": [
-                    {
-                        "token": {
-                            "type": "string"
-                        },
-                        "login": {
-                            "type": "string"
-                        }
-                    }
-                ]
+            "token": {
+                "type": "string"
+            },
+            "login": {
+                "type": "string"
+            },
+            "oldPassword": {
+                "type": "string",
+                "minLength": 8
             }
         }
     },

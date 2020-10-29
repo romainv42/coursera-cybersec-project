@@ -1,0 +1,9 @@
+{
+    "description": "Retrieve user's login and email",
+    "response": {
+        "200": {
+            "login": { "type": "string" },
+            "email": { "type": "string" }
+        }
+    }
+}

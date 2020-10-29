@@ -25,8 +25,8 @@ module.exports = function (pool) {
                 const { rows } = await co.query(`INSERT INTO users 
                 ("login", "email", "moreInfo", "changePassword", "validated") 
                 VALUES ($1, $2, $3, false, false) RETURNING user_id;`, [
-                    user.login,
-                    user.email,
+                    user.login.trim(),
+                    user.email.trim(),
                     user.moreInfo,
                 ])
                 if (!rows.length) {
@@ -98,12 +98,33 @@ module.exports = function (pool) {
             ])
         },
         getLoginById: function (user_id) {
-            return co.query(`SELECT login FROM users WHERE user_id=$1`, [user_id])
+            return co.query(`SELECT login, email FROM users WHERE user_id=$1`, [user_id])
         },
         updatePassword: function (user_id, password) {
-            return co.query("UPDATE password SET hashed=$1 WHERE user_id=$2", [
+            return co.query(`INSERT INTO password VALUES
+            ($2, $1) ON CONFLICT(user_id) DO UPDATE SET hashed=$1`, [
                 hmac(password),
                 user_id
+            ])
+        },
+        updateEmail: function (user_id, email) {
+            return co.query("UPDATE users SET email=$1, validated=false WHERE user_id=$2", [
+                email,
+                user_id,
+            ])
+        },
+        updateAuthNames: function (user_id, authenticators) {
+            return Promise.all(authenticators.map(({ credID, name }) => 
+            co.query("UPDATE authenticators SET name=$1 WHERE user_id=$2 AND \"credID\"=$3", [
+                name,
+                user_id,
+                credID,
+            ])))
+        },
+        deleteAuthr: function (user_id, credID) {
+            return co.query("DELETE FROM authenticators WHERE user_id=$1 AND \"credID\"=$2", [
+                user_id,
+                credID,
             ])
         }
     }

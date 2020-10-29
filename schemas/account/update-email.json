@@ -1,0 +1,16 @@
+{
+    "description": "Route for update user's email",
+    "body": {
+        "type": "object",
+        "properties": {
+            "email": {
+                "type": "string",
+                "maxLength": 255,
+                "format": "email"
+            }
+        },
+        "required": [
+            "email"
+        ]
+    }
+}

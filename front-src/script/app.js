@@ -12,6 +12,7 @@ import { Logout } from "./components/logout"
 import { Inbox } from "./components/inbox"
 import { Disconnected } from "./components/disconnected"
 import { ResetPassword } from "./components/changePassword/reset"
+import { MyAccount } from "./components/account"
 
 const root = document.getElementById("rvapp")
     ;
@@ -47,6 +48,7 @@ const cookieParser = () => document.cookie.split(';')
             "/inbox": { render: () => m(Layout, m(Inbox)) },
             "/disconnected": { render: () => m(Layout, m(Disconnected)) },
             "/forgot-password": { render: ({ attrs }) => m(Layout, m(ResetPassword, attrs)) },
+            "/account": { render: () => m(Layout, m(MyAccount)) },
         })
     }
 })()
