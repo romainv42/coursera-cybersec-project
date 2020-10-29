@@ -1,0 +1,11 @@
+{
+    "description": "Route for memoryless users who forgot their password.",
+    "body": {
+        "type": "object",
+        "properties": {
+            "login": {
+                "type": "string"
+            }
+        }
+    }
+}

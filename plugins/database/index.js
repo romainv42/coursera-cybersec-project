@@ -38,7 +38,8 @@ async function databaseHelper (fastify, options) {
         emails: require("./queries/emails")(pool),
         session: require("./queries/session")(pool),
         messages: require("./queries/message")(pool),
-    }
+        reset: require("./queries/reset")(pool),
+        }
 
     fastify.decorate("dbHelper", helper)
 }

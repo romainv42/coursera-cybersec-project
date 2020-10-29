@@ -17,8 +17,8 @@ const messagesPanel = {
         }
         await Services.Messages.send(this.message, contact)
         this.onsent(contact, {
-            recipient: contact,
-            sender: store.User.username,
+            recipient_login: contact,
+            sender_login: store.User.username,
             content: {
                 message: this.message,
                 date: Date.now(),

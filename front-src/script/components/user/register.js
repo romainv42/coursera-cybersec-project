@@ -89,7 +89,7 @@ const registerGlobalInfo = {
                     onchange: (e) => this.user.moreInfo = e.target.value,
                 }),
             ]),
-            m("button[type=submit].button.is-primary", "Next"),
+            m(".form-row", m("button[type=submit].button.is-primary", "Next"),)
         ])
     }
 }
@@ -216,56 +216,66 @@ const chooseSecurityOption = {
     },
     view: function () {
         return m("p", "Please select your prefered authenticating system:", [
-            m("form.sec-option", { onsubmit: () => { this.validate(); return false; } }, [
-                m("ul.choose-option", [
-                    m("li", { className: this.authenticationMode === "PWD" ? "selected" : "", onclick: () => this.switchToPwd() }, [
-                        `Password, the old school one, secured with a least one uppercase
+            m("ul.choose-option", [
+                m("li", { className: this.authenticationMode === "PWD" ? "selected" : "", onclick: () => this.switchToPwd() }, [
+                    `Password, the old school one, secured with a least one uppercase
                     character, one lowercase character, one number and one symbol and 8 characters length.`,
-                        ...(this.authenticationMode === "PWD" ? [
-                            m("div.form-row", [
-                                m("label[for=re-password].required", [
-                                    "Password:",
-                                ]),
-                                m("input#re-password[type=password][placeholder=your password]", {
-                                    value: this.auth.password,
-                                    onchange: (e) => this.auth.password = e.target.value,
-                                }),
-                                ...(this.errors && this.errors.password ? [m("span.error", this.errors.password)] : [])
-                            ]),
-                            m("div.form-row", [
-                                m("label[for=re-confirm-password].required", [
-                                    "Confirm your password:",
-                                ]),
-                                m("input#re-confirm-password[type=password][placeholder=confirmation]", {
-                                    value: this.auth.confirmPwd,
-                                    onchange: (e) => this.auth.confirmPwd = e.target.value,
-                                }),
-                                ...(this.errors && this.errors.confirmPwd ? [m("span.error", this.errors.confirmPwd)] : [])
-                            ]),
-                        ] : [])
+                    m(".form-row.center", [
+                        m("button[type=button].button.is-info.center", { onclick: () => this.switchToPwd() }, "Select")
                     ]),
-                    m("li", { className: this.authenticationMode === "WAN" ? "selected" : "", onclick: () => this.switchToWAN() }, [
-                        `WebAuthN, a new passwordless way to authenticate yourself using a FIDO2 device.
-                    You can use a dongle or your compatible smartphone. Try it.`,
-                    ]),
-                    ...(this.authenticationMode === "WAN" ? [
-                        m("p", "For the moment, only Chrome and Firefox browser on a computer have been tested successfully."),
-                        m("p", "I hope to have the time later to implement other platform."),
-                        m(".center", [
-                            ...(this.errors && this.errors.webauthn ?
-                                [
-                                    m("p.errors", this.errors.webauthn),
-                                ] :
-                                [
-                                    m("button.button.is-primary", "Let's Go"),
-                                ]),
-                        ]),
-                    ] : [])
-
                 ]),
+                m("li", { className: this.authenticationMode === "WAN" ? "selected" : "", onclick: () => this.switchToWAN() }, [
+                    `WebAuthN, a new passwordless way to authenticate yourself using a FIDO2 device.
+                    You can use a dongle or your compatible smartphone. Try it.`,
+                    m(".form-row.center", [
+                        m("button[type=button].button.is-info", { onclick: () => this.switchToWAN() }, "Select")
+                    ]),
+                ]),
+
+            ]),
+            m("form.sec-option", { onsubmit: () => { this.validate(); return false; } }, [
+                ...(this.authenticationMode === "WAN" ? [
+                    m("p", "For the moment, only Chrome and Firefox browser on a computer have been tested successfully."),
+                    m("p", "I hope to have the time later to implement other platform."),
+                    m("div", [
+                        m("button[type=button].button.is-small", { onclick: () => this.previous() }, "Previous"),
+                        ...(this.errors && this.errors.webauthn ?
+                            [
+                                m("p.errors", this.errors.webauthn),
+                            ] :
+                            [
+
+                                m("button.button.is-primary", "Let's Go"),
+                            ]),
+                    ]),
+                ] : []),
+                ...(this.authenticationMode === "PWD" ? [
+                    m("div.form-row", [
+                        m("label[for=re-password].required", [
+                            "Password:",
+                        ]),
+                        m("input#re-password[type=password][placeholder=your password]", {
+                            value: this.auth.password,
+                            onchange: (e) => this.auth.password = e.target.value,
+                        }),
+                        ...(this.errors && this.errors.password ? [m("span.error", this.errors.password)] : [])
+                    ]),
+                    m("div.form-row", [
+                        m("label[for=re-confirm-password].required", [
+                            "Confirm your password:",
+                        ]),
+                        m("input#re-confirm-password[type=password][placeholder=confirmation]", {
+                            value: this.auth.confirmPwd,
+                            onchange: (e) => this.auth.confirmPwd = e.target.value,
+                        }),
+                        ...(this.errors && this.errors.confirmPwd ? [m("span.error", this.errors.confirmPwd)] : [])
+                    ]),
+                    m("div", [
+                        m("button[type=button].button.is-small", { onclick: () => this.previous() }, "Previous"),
+                        m("button[type=submit].button.is-primary", "Next"),
+                    ]),
+                ] : []),
                 ...(this.errors && this.errors.auth ? [m("span.error", this.errors.auth, m("br"))] : []),
-                m("button[type=button].button.is-small", { onclick: () => this.previous() }, "Previous"),
-                m("button[type=submit].button.is-primary", "Next"),
             ]),
         ])
     }

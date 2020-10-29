@@ -5,7 +5,8 @@ const {
 } = require("../../../utils")
 
 const KINDS = {
-    validation: "VALID"
+    validation: "VALID",
+    forgotPwd: "FORGT"
 }
 
 module.exports = function (pool) {

@@ -11,6 +11,7 @@ import {
 import { Logout } from "./components/logout"
 import { Inbox } from "./components/inbox"
 import { Disconnected } from "./components/disconnected"
+import { ResetPassword } from "./components/changePassword/reset"
 
 const root = document.getElementById("rvapp")
     ;
@@ -29,7 +30,6 @@ const cookieParser = () => document.cookie.split(';')
     m.route.prefix = ""
     try {
         await crsfInit()
-        console.log(sessionStorage.getItem("token"))
         if (sessionStorage.getItem("token") || cookieParser()["capstone-token"]) {
             const result = await Services.Users.checkCookie()
             store.User.username = result.username
@@ -45,7 +45,8 @@ const cookieParser = () => document.cookie.split(';')
             "/wrong-email": { render: () => m(Layout, m(WrongEmail)) },
             "/logout": { render: () => m(Layout, m(Logout)) },
             "/inbox": { render: () => m(Layout, m(Inbox)) },
-            "/disconnected": { render: () => m(Layout, m(Disconnected)) }
+            "/disconnected": { render: () => m(Layout, m(Disconnected)) },
+            "/forgot-password": { render: ({ attrs }) => m(Layout, m(ResetPassword, attrs)) },
         })
     }
 })()

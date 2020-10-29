@@ -21,12 +21,13 @@ const securedRequest = async (options) => {
     } catch (error) {
         if (error.code === 412) {
             location.reload()
-        }
-        if (error.code === 401) {
+        } else if (error.code === 401) {
             if (jwtToken) {
                 sessionStorage.removeItem("token")
             }
             m.route.set("/disconnect")
+        } else {
+            throw error
         }
     } finally {
         const token = currentXhr.getResponseHeader(CSRF_H_KEY)
