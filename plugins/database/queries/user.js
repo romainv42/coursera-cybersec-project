@@ -39,16 +39,7 @@ module.exports = function (pool) {
                         hmac(auth.password),
                     ])
                 } else if (authenticationMode === "WAN") {
-                    await co.query(`INSERT INTO authenticators
-                        ("user_id", "name", "fmt", "counter", "publicKey", "credID")
-                        VALUES ($1, 'Registration', $2, $3, $4, $5)
-                    `, [
-                        user_id,
-                        auth.fmt,
-                        auth.counter,
-                        auth.publicKey,
-                        auth.credID,
-                    ])
+                    await this.addAuthenticator(user_id, auth, "Registration")
                 } else {
                     throw {
                         statusCode: 400,
@@ -65,9 +56,22 @@ module.exports = function (pool) {
         updateAuthr: function (user_id, { counter, credID }) {
             return co.query(`UPDATE authenticators SET counter=$1 
                 WHERE user_id=$2 AND "credID"=$3`, [
-                    counter,
-                    user_id,
-                    credID,
+                counter,
+                user_id,
+                credID,
+            ])
+        },
+        addAuthenticator: function (user_id, auth, name) {
+            return co.query(`INSERT INTO authenticators
+            ("user_id", "name", "fmt", "counter", "publicKey", "credID")
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `, [
+                user_id,
+                name,
+                auth.fmt,
+                auth.counter,
+                auth.publicKey,
+                auth.credID,
             ])
         },
         validateEmail: async function (user_id) {
@@ -95,6 +99,12 @@ module.exports = function (pool) {
         },
         getLoginById: function (user_id) {
             return co.query(`SELECT login FROM users WHERE user_id=$1`, [user_id])
+        },
+        updatePassword: function (user_id, password) {
+            return co.query("UPDATE password SET hashed=$1 WHERE user_id=$2", [
+                hmac(password),
+                user_id
+            ])
         }
     }
 }

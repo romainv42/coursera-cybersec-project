@@ -54,6 +54,22 @@ export default {
             url: "/api/users/logout",
             method: "get",
         })
+    },
+    forgotPassword: (login) => {
+        return securedRequest({
+            url: "/api/users/forgot-password",
+            method: "post",
+            body: {
+                login,
+            }
+        })
+    },
+    passwordReset: (body) => {
+        return securedRequest({
+            url: "/api/users/password-reset",
+            method: "post",
+            body,
+        })
     }
 }
 

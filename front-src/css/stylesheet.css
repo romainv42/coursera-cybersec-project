@@ -68,7 +68,22 @@ input, textarea {
     color: red;
 }
 
+.register {
+    padding: 16px;
+}
+
+.form-row {
+    margin-top: 8px;
+}
+
+.choose-option {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
 .choose-option li {
+    margin: 16px 24px 16px 24px;
     list-style-type: disclosure-closed;
     padding: 4px;
     border: solid 1px #cccccc;
@@ -155,11 +170,15 @@ nav li {
 }
 
 .message.as-recipient {
-    align-self: left;
+    align-self: flex-start;
     border-bottom-left-radius: 2px;
 }
 
 .message .date {
     font-size: 0.8rem;
     text-align: right;
+}
+
+.forgot-password {
+    padding: 24px;
 }

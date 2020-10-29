@@ -56,8 +56,13 @@ const queries = [
         CONSTRAINT "messages_message_id" PRIMARY KEY ("message_id"),
         CONSTRAINT "messages_from_fkey" FOREIGN KEY ("from") REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE,
         CONSTRAINT "messages_to_fkey" FOREIGN KEY ("to") REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
+    ) WITH (oids = false);`,
+    `CREATE TABLE IF NOT EXISTS "public"."reset_tokens" (
+        "user_id" integer NOT NULL,
+        "token" character varying(44) NOT NULL,
+        CONSTRAINT "reset_tokens_user_id" PRIMARY KEY ("user_id"),
+        CONSTRAINT "reset_tokens_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
     ) WITH (oids = false);`
-
 ]
 
 /**

@@ -56,7 +56,6 @@ async function jwt(fastify, { issuer }) {
             const unsigned = `${defaultHeader}.${base64url(Buffer.from(JSON.stringify(payload), "utf8").toString("base64"))}`
 
             const signature = fastify.rsa.sign(unsigned)
-            console.log(`${unsigned}.${base64url(signature.toString("base64"))}`)
             return `${unsigned}.${base64url(signature.toString("base64"))}`
         },
         verifyHook: async (request, reply) => {
@@ -64,7 +63,6 @@ async function jwt(fastify, { issuer }) {
             try {
                 if (request.headers.authorization) {
                     request.log.info("Authorization header found")
-                    console.log(request.headers.authorization)
                     token = request.headers.authorization.replace("Bearer ", "")
                 } else if (request.cookies["capstone-token"]) {
                     request.log.info("Cookie found")
