@@ -186,6 +186,16 @@ const ResetPassword = {
                                     ...(this.errors && this.errors.password ? [m("span.error", this.errors.password)] : [])
                                 ]),
                                 m("div.form-row", [
+                                    m("label[for=re-password].required", [
+                                        "Password:",
+                                    ]),
+                                    m("input#re-password[type=password][placeholder=your password]", {
+                                        value: this.newPassword,
+                                        onchange: (e) => this.newPassword = e.target.value,
+                                    }),
+                                    ...(this.errors && this.errors.password ? [m("span.error", this.errors.password)] : [])
+                                ]),
+                                m("div.form-row", [
                                     m("label[for=re-confirm-password].required", [
                                         "Confirm your password:",
                                     ]),

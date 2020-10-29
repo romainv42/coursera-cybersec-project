@@ -136,6 +136,10 @@ fastify.register(require("./routes/email"), { prefix: "/from-email" })
 // Configure route to manage messages
 fastify.register(require("./routes/messages"), { prefix: "/api/messages" })
 
+// Configure route to my account page
+fastify.register(require("./routes/account"), { prefix: "/api/accounts" })
+
+
 // Configure route for static files
 fastify.register(require("./routes/static"))
 

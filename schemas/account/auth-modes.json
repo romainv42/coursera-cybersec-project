@@ -1,0 +1,27 @@
+{
+    "description": "Indicate if user has password or authenticator device",
+    "response": {
+        "200": {
+            "type": "object",
+            "properties": {
+                "has-password": {
+                    "type": "boolean"
+                },
+                "authenticators": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "credID": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

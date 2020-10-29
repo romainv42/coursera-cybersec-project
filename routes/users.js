@@ -45,7 +45,7 @@ const validateAuthenticator = (authenticator, challenge) => {
             error: "Origin mismatched!"
         }
     }
-    
+
     const response = verifyAuthenticatorAttestationResponse(webauthNResponse.response)
     if (!response) throw {
         statusCode: 400,
@@ -327,7 +327,7 @@ module.exports = async function (fastify) {
                 }
             }
             user_id = user[0].user_id
-        } else if (oldPassword) {
+        } else {
             user_id = req.user?.user_id
             if (!user_id) {
                 throw {
@@ -336,17 +336,22 @@ module.exports = async function (fastify) {
                 }
             }
 
-            const { rows: pwd } = await dbHelper.users.identifyByPassword(user_id, oldPassword)
-            if (!pwd || !pwd.length) {
+            const { rows: hasPwd } = await dbHelper.users.hasPasswordAuth(user_id)
+            if (!oldPassword && newPassword && hasPwd && hasPwd.length) {
                 throw {
-                    statusCode: 401,
-                    error: "Old password doesn't match",
+                    statusCode: 400,
+                    error: "User didn't provide old password"
                 }
             }
-        } else {
-            throw {
-                statusCode: 400,
-                error: "Impossible case ?!"
+
+            if (oldPassword && newPassword && hasPwd && hasPwd.length) {
+                const { rows: pwd } = await dbHelper.users.identifyByPassword(user_id, oldPassword)
+                if (!pwd || !pwd.length) {
+                    throw {
+                        statusCode: 400,
+                        error: "Old password doesn't match",
+                    }
+                }
             }
         }
 
@@ -364,7 +369,6 @@ module.exports = async function (fastify) {
                     message: "Password doesn't respect requirements.",
                 }
             }
-
             await dbHelper.users.updatePassword(user_id, newPassword)
         } else if (authenticator) {
             const result = validateAuthenticator(authenticator, req.session.challenge)
@@ -376,9 +380,11 @@ module.exports = async function (fastify) {
                 error: "Impossible case ?!"
             }
         }
-        
-        await dbHelper.reset.deleteRow(user_id, token)
-        
+
+        if (token) {
+            await dbHelper.reset.deleteRow(user_id, token)
+        }
+
         res.status(201)
         return "Update completed!"
     }
