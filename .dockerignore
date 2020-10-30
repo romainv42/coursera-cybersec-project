@@ -2,7 +2,6 @@ node_modules
 .env
 .git
 .gitignore
-secrets/*
 __data
 public
 .env.base

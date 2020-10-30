@@ -20,9 +20,6 @@ services:
     env_file: .env
     networks:
       - capstone-nw
-    volumes:
-      - .:/app
-    working_dir: /app
     ports:
       - "5813:5813"
 
