@@ -5,3 +5,4 @@ node_modules
 secrets/*
 __data
 public
+.env.base
