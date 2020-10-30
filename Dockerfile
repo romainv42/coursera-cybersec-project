@@ -12,11 +12,11 @@ WORKDIR /app
 RUN adduser -S dummy -G node && \
     chown -R dummy:node .
 
-USER dummy
-
 ENV NODE_ENV production
-COPY --chown=dummy:node . .
-COPY --chown=dummy:node --from=builder /app/node_modules node_modules/
-COPY --chown=dummy:node --from=builder /app/public public/
+COPY . .
+COPY --from=builder /app/node_modules node_modules/
+COPY --from=builder /app/public public/
+
+USER dummy
 
 CMD ["npm", "start"]
