@@ -1,0 +1,19 @@
+{
+    "description": "Route to get 2FA app for a user",
+    "response": {
+        "200": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "twofa_id": {
+                        "type": "number"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,14 +1,14 @@
 {
-    "description": "Route allowing to delete an authenticator device",
+    "description": "Route allowing to delete an 2FA app",
     "body": {
         "type": "object",
         "properties": {
-            "credID": {
+            "id": {
                 "type": "string"
             }
         },
         "required": [
-            "credID"
+            "id"
         ]
     },
     "response": {

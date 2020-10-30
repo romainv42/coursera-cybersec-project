@@ -56,7 +56,7 @@ const validateAuthenticator = (authenticator, challenge) => {
 }
 
 module.exports = async function (fastify) {
-    const { dbHelper, csrf, mailer, jwt } = fastify
+    const { dbHelper, csrf, mailer, jwt, twoFactor, rsa } = fastify
 
     fastify.addHook('onRequest', csrf.check)
 
@@ -167,9 +167,11 @@ module.exports = async function (fastify) {
         const [
             { rows: password },
             { rows: authenticators },
+            { rows: twoFactors },
         ] = await Promise.all([
             dbHelper.users.hasPasswordAuth(user_id),
             dbHelper.users.getAuthenticators(user_id),
+            dbHelper.users.get2FA(user_id),
         ])
         const assertion = authenticators?.length && generateServerGetAssertion(authenticators)
         req.session.challenge = assertion.challenge
@@ -177,6 +179,7 @@ module.exports = async function (fastify) {
         return {
             login,
             passwordEnabled: password && password.length === 1,
+            has2FA: twoFactors && twoFactors.length > 0,
             assertion,
         }
     })
@@ -184,7 +187,7 @@ module.exports = async function (fastify) {
     fastify.post("/identify", {
         schema: require("../schemas/users/identify.json")
     }, async (req, res) => {
-        const { username, password, authenticator, remember } = req.body
+        const { username, password, authenticator, remember, totp } = req.body
 
         const { rows } = await dbHelper.users.search(username.trim())
         if (!rows || !rows.length) {
@@ -194,6 +197,8 @@ module.exports = async function (fastify) {
             }
         }
         const { user_id } = rows[0]
+
+        const { rows: twoFactors } = await dbHelper.users.get2FA(user_id)
 
         let identified = false
         if (password) {
@@ -235,6 +240,29 @@ module.exports = async function (fastify) {
                 error: "Unable to authenticate the user"
             }
         }
+
+        if (twoFactors && twoFactors.length) {
+            if (!totp) {
+                throw {
+                    statusCode: 400,
+                    error: "Missing 2 FA code"
+                }
+            }
+            const twoGood = twoFactors.reduce((acc, cur) => acc || twoFactor.verify(
+                rsa.decrypt(cur.secret, { encoding: "base64" }).toString("ascii"),
+                totp
+            ), false)
+
+            console.log("2FA", twoGood)
+            if (!twoGood) {
+                throw {
+                    statusCode: 400,
+                    error: "Invalid"
+                }
+            }
+            req.log.info("Successfull 2FA")
+        }
+
         req.log.info("User successfully identified")
 
         const expiration = remember ? WEEK_EXPIRES : H24_EXPIRES
