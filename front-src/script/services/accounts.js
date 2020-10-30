@@ -41,10 +41,48 @@ export default {
     deleteAuthr: (credID) => {
         return securedRequest({
             url: "/api/accounts/devices/delete",
-            method: "post",
+            method: "delete",
             body: {
                 credID,
             },
+        })
+    },
+    getNew2FA: () => {
+        return securedRequest({
+            url: "/api/accounts/2fa/new",
+            method: "get",
+        })
+    },
+    sendTopt: (totp, name) => {
+        return securedRequest({
+            url: "/api/accounts/2fa/save",
+            method: "post",
+            body: {
+                totp,
+                name,
+            }
+        })
+    },
+    get2FA: () => {
+        return securedRequest({
+            url: "/api/accounts/2fa",
+            method: "get",
+        })
+    },
+    delete2FA: (id) => {
+        return securedRequest({
+            url: "/api/accounts/2fa",
+            method: "delete",
+            body: {
+                id,
+            },
+        })
+    },
+    update2FA: (twoFAs) => {
+        return securedRequest({
+            url: "/api/accounts/2fa/update",
+            method: "post",
+            body: twoFAs
         })
     }
 }

@@ -18,6 +18,7 @@ const {
     SMTP_USER,
     SMTP_PASSWORD,
     SENDER,
+    TWOFA_APP_NAME,
 } = process.env
 
 const {
@@ -45,7 +46,7 @@ fastify.register(require("fastify-helmet"), {
             scriptSrc: ["'self'", "unpkg.com"],
             styleSrc: ["'self'", "cdn.jsdelivr.net"],
             fontSrc: ["'self'"],
-            imgSrc: ["'self'",],
+            imgSrc: ["'self'", "chart.googleapis.com"],
             upgradeInsecureRequests: [],
         }
     }
@@ -119,6 +120,11 @@ fastify.register(require("./plugins/database"), {
     password: POSTGRES_PASSWORD,
     database: POSTGRES_DB,
     server: POSTGRES_SERVER,
+})
+
+// Initiate our 2-FA plugin
+fastify.register(require("./plugins/2fa"), {
+    appName: TWOFA_APP_NAME,
 })
 
 // Configure route to get initial CSRF token

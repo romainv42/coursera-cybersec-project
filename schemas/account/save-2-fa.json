@@ -1,0 +1,17 @@
+{
+    "description": "Route to register a new TOTP app",
+    "body": {
+        "type": "object",
+        "properties": {
+            "totp": {
+                "type": "string"
+            },
+            "name": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "totp"
+        ]
+    }
+}

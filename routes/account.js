@@ -1,7 +1,7 @@
 const H24_EXPIRES = 1000 * 60 * 60 * 24 // 24 hours in milliseconds
 
 module.exports = async function (fastify) {
-    const { dbHelper, csrf, mailer, jwt } = fastify
+    const { dbHelper, csrf, mailer, jwt, twoFactor, rsa } = fastify
 
     fastify.addHook('onRequest', csrf.check)
     fastify.addHook('onRequest', jwt.verifyHook)
@@ -87,8 +87,8 @@ module.exports = async function (fastify) {
         return "Authenticators updated"
     })
 
-    fastify.post("/devices/delete", {
-
+    fastify.delete("/devices", {
+        schema: require("../schemas/account/delete-devices.json")
     }, async (req, res) => {
         const { credID } = req.body
         const { user_id } = req.user
@@ -99,7 +99,75 @@ module.exports = async function (fastify) {
             }
         }
         await dbHelper.users.deleteAuthr(user_id, credID)
-        res.status(204)
-        return
+        res.status(202)
+        return "Deleted"
+    })
+
+    fastify.get("/2fa", {
+        schema: require("../schemas/account/get-2-fa.json")
+    }, async (req) => {
+        const { user_id } = req.user
+        const { rows } = await dbHelper.users.get2FA(user_id)
+        return rows
+    })
+
+    fastify.get("/2fa/new", async (req, res) => {
+        const { otpauth_url, base32 } = await twoFactor.generate()
+        req.session.temp_2fa = base32
+
+        return {
+            otpauth_url
+        }
+    })
+
+    fastify.post("/2fa/save", {
+        schema: require("../schemas/account/save-2-fa.json")
+    }, async (req, res) => {
+        const { totp, name } = req.body
+        const { temp_2fa } = req.session
+        const { user_id } = req.user
+
+        if (!temp_2fa) {
+            throw {
+                statusCode: 400,
+                error: "User must ask for a secret before"
+            }
+        }
+
+        if (!totp) {
+            throw {
+                statusCode: 400,
+                error: "User must provide a code"
+            }
+        }
+
+        const test = twoFactor.verify(temp_2fa, totp)
+        if (!test) {
+            throw {
+                statusCode: 400,
+                error: "Invalid code!"
+            }
+        }
+
+        await dbHelper.users.add2FA(user_id, name, rsa.encrypt(temp_2fa, { encoding: "ascii" }).toString("base64"))
+        res.status(201)
+        return "Two factor app saved!"
+    })
+
+    fastify.delete("/2fa", {
+        schema: require("../schemas/account/delete-2-fa.json")
+    }, async (req, res) => {
+        const { id } = req.body
+        const { user_id } = req.user
+        await dbHelper.users.delete2FA(user_id, id)
+        res.status(202)
+        return "deleted"
+    })
+
+    fastify.post("/2fa/update", {}, async (req, res) => {
+        const { user_id } = req.user
+
+        await dbHelper.users.update2FAnames(user_id, req.body)
+        return "Updated"
     })
 }

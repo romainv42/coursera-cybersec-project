@@ -1,0 +1,17 @@
+{
+    "description": "Route to update the 2FA app names",
+    "body": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "twofa_id": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

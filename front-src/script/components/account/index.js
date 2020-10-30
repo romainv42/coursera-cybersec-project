@@ -2,8 +2,9 @@ import { Password } from "./password"
 import { Authenticators } from "./authenticators"
 import { Login } from "./login"
 import { Loader } from "../global"
-import Services from "../../services"
+import { TwoFactor } from "./twoFactor"
 
+import Services from "../../services"
 
 const MyAccount = {
     load: async function () {
@@ -16,6 +17,8 @@ const MyAccount = {
             const result = await Services.Accounts.getAuthModes()
             this.hasPassword = result["has-password"]
             this.authenticators = result.authenticators
+
+            this.twoFactorApps = await Services.Accounts.get2FA()
         } finally {
             this.loading = false
         }
@@ -31,6 +34,7 @@ const MyAccount = {
                 m(Login, { login: this.login, email: this.email, loading: this.loading }),
                 m(Password, { hasPassword: this.hasPassword, loading: this.loading }),
                 m(Authenticators, { login: this.login, authenticators: this.authenticators, loading: this.loading, onrefresh: () => this.load() }),
+                m(TwoFactor, { login: this.login, twoFactorApps: this.twoFactorApps, loading: this.loading, onrefresh: () => this.load() }),
             ]),
         ])
     }

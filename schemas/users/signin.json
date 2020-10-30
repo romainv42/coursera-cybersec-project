@@ -13,9 +13,16 @@
             "description": "Returns username, flag to enable password authentication and/or list of stored authenticators IDs",
             "type": "object",
             "properties": {
-                "login": { "type": "string" },
-                "passwordEnabled": { "type": "boolean" },
-                "assertion": { 
+                "login": {
+                    "type": "string"
+                },
+                "passwordEnabled": {
+                    "type": "boolean"
+                },
+                "has2FA": {
+                    "type": "boolean"
+                },
+                "assertion": {
                     "description": "Assertion to prove private-key ownership",
                     "type": "object",
                     "properties": {

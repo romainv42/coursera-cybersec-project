@@ -126,6 +126,33 @@ module.exports = function (pool) {
                 user_id,
                 credID,
             ])
+        },
+        add2FA: function (user_id, name, secret) {
+            return co.query("INSERT INTO two_factor (user_id, name, secret) VALUES ($1, $2, $3)", [
+                user_id,
+                name || `Two-Factor App ${new Date().toDateString()}`,
+                secret,
+            ])
+        },
+        get2FA: function (user_id) {
+            return co.query("SELECT * FROM two_factor WHERE user_id=$1", [
+                user_id,
+            ])
+        },
+        delete2FA: function (user_id, id) {
+            return co.query("DELETE from two_factor WHERE user_id=$1 AND twofa_id=$2", [
+                user_id,
+                id,
+            ])
+        },
+        update2FAnames: function (user_id, twoFA) {
+            return Promise.all(twoFA.map(({ twofa_id, name}) => 
+                co.query("UPDATE two_factor SET name=$1 WHERE user_id=$2 AND twofa_id=$3", [
+                    name,
+                    user_id,
+                    twofa_id,
+                ])
+            ))
         }
     }
 }
