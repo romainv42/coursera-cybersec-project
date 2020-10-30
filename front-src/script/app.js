@@ -11,17 +11,32 @@ import {
 import { Logout } from "./components/logout"
 import { Inbox } from "./components/inbox"
 import { Disconnected } from "./components/disconnected"
+import { ResetPassword } from "./components/changePassword/reset"
+import { MyAccount } from "./components/account"
 
 const root = document.getElementById("rvapp")
     ;
+
+const cookieParser = () => document.cookie.split(';')
+    .map(c => {
+        const name = c.splice(0, c.indexOf("="))
+        return {
+            [name.trim()]: c
+        }
+    })
+    .reduce((a, c) => ({ ...a, ...c }), {})
+    ;
+
 (async function init() {
+    m.route.prefix = ""
     try {
         await crsfInit()
-        const result = await Services.Users.checkCookie()
-        store.User.username = result.username
-        store.User.isLogged = true
+        if (sessionStorage.getItem("token") || cookieParser()["capstone-token"]) {
+            const result = await Services.Users.checkCookie()
+            store.User.username = result.username
+            store.User.isLogged = true
+        }
     } catch (e) {
-        
     } finally {
         m.route(root, "/", {
             "/": { render: () => m(Layout, m(Welcome)) },
@@ -31,7 +46,9 @@ const root = document.getElementById("rvapp")
             "/wrong-email": { render: () => m(Layout, m(WrongEmail)) },
             "/logout": { render: () => m(Layout, m(Logout)) },
             "/inbox": { render: () => m(Layout, m(Inbox)) },
-            "/disconnected": { render: () => m(Layout, m(Disconnected)) }
+            "/disconnected": { render: () => m(Layout, m(Disconnected)) },
+            "/forgot-password": { render: ({ attrs }) => m(Layout, m(ResetPassword, attrs)) },
+            "/account": { render: () => m(Layout, m(MyAccount)) },
         })
     }
 })()

@@ -64,9 +64,9 @@ async function jwt(fastify, { issuer }) {
                 if (request.headers.authorization) {
                     request.log.info("Authorization header found")
                     token = request.headers.authorization.replace("Bearer ", "")
-                } else if (request.cookies.token) {
+                } else if (request.cookies["capstone-token"]) {
                     request.log.info("Cookie found")
-                    token = request.cookies.token
+                    token = request.cookies["capstone-token"]
                 } else {
                     throw "No JWT found"
                 }

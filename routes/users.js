@@ -16,8 +16,47 @@ const {
     generateServerGetAssertion
 } = require("../utils/webauthn")
 
+
+const passwordRequirements = (password) => (
+    /[a-z]+/.test(password) &&
+    /[A-Z]+/.test(password) &&
+    /[0-9]+/.test(password) &&
+    /[^a-zA-Z0-9]+/.test(password) &&
+    password.length >= 8
+)
+
+const validateAuthenticator = (authenticator, challenge) => {
+    const webauthNResponse = authenticator
+    const clientData = JSON.parse(
+        Buffer.from(webauthNResponse.response.clientDataJSON, "base64")
+            .toString("utf-8")
+    )
+
+    if (clientData.challenge !== challenge) {
+        throw {
+            statusCode: 400,
+            error: "Challenge mismatched!"
+        }
+    }
+    const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":5813" : "")}`
+    if (clientData.origin !== currentOrigin) {
+        throw {
+            statusCode: 400,
+            error: "Origin mismatched!"
+        }
+    }
+
+    const response = verifyAuthenticatorAttestationResponse(webauthNResponse.response)
+    if (!response) throw {
+        statusCode: 400,
+        error: "WebAuthn Invalid response"
+    }
+
+    return response
+}
+
 module.exports = async function (fastify) {
-    const { dbHelper, csrf, mailer, jwt } = fastify
+    const { dbHelper, csrf, mailer, jwt, twoFactor, rsa } = fastify
 
     fastify.addHook('onRequest', csrf.check)
 
@@ -51,36 +90,18 @@ module.exports = async function (fastify) {
                     message: "Password and confirmation mismatched.",
                 }
             }
+
+            if (!passwordRequirements(password)) {
+                throw {
+                    status: 400,
+                    message: "Password doesn't respect requirements.",
+                }
+            }
         }
 
         if (authenticationMode === "WAN") {
-            webauthNResponse = req.body.auth
-            const clientData = JSON.parse(
-                Buffer.from(webauthNResponse.response.clientDataJSON, "base64")
-                    .toString("utf-8")
-            )
-
-            if (clientData.challenge !== req.session.challenge) {
-                throw {
-                    statusCode: 400,
-                    error: "Challenge mismatched!"
-                }
-            }
-            const currentOrigin = `https://${ORIGIN + (process.env.NODE_ENV !== "production" ? ":5813" : "")}`
-            if (clientData.origin !== currentOrigin) {
-                throw {
-                    statusCode: 400,
-                    error: "Origin mismatched!"
-                }
-            }
+            req.body.auth = validateAuthenticator(req.body.auth, req.session.challenge)
             req.session.challenge = null
-            const response = verifyAuthenticatorAttestationResponse(webauthNResponse.response)
-            if (!response) throw {
-                statusCode: 400,
-                error: "WebAuthn Invalid response"
-            }
-
-            req.body.auth = response
         }
 
         const user_id = await dbHelper.users.register(req.body)
@@ -146,16 +167,19 @@ module.exports = async function (fastify) {
         const [
             { rows: password },
             { rows: authenticators },
+            { rows: twoFactors },
         ] = await Promise.all([
             dbHelper.users.hasPasswordAuth(user_id),
             dbHelper.users.getAuthenticators(user_id),
+            dbHelper.users.get2FA(user_id),
         ])
         const assertion = authenticators?.length && generateServerGetAssertion(authenticators)
         req.session.challenge = assertion.challenge
-        
+
         return {
             login,
             passwordEnabled: password && password.length === 1,
+            has2FA: twoFactors && twoFactors.length > 0,
             assertion,
         }
     })
@@ -163,7 +187,7 @@ module.exports = async function (fastify) {
     fastify.post("/identify", {
         schema: require("../schemas/users/identify.json")
     }, async (req, res) => {
-        const { username, password, authenticator, remember } = req.body
+        const { username, password, authenticator, remember, totp } = req.body
 
         const { rows } = await dbHelper.users.search(username.trim())
         if (!rows || !rows.length) {
@@ -174,6 +198,8 @@ module.exports = async function (fastify) {
         }
         const { user_id } = rows[0]
 
+        const { rows: twoFactors } = await dbHelper.users.get2FA(user_id)
+
         let identified = false
         if (password) {
             const { rows: pwd } = await dbHelper.users.identifyByPassword(user_id, password)
@@ -182,7 +208,7 @@ module.exports = async function (fastify) {
             const { rows: authenticators } = await dbHelper.users.getAuthenticators(user_id)
 
             const clientData = JSON.parse(Buffer.from(authenticator.response.clientDataJSON, "base64").toString("utf8"));
-            
+
             if (Buffer.from(clientData.challenge, "base64").toString("base64") !== req.session.challenge) {
                 throw {
                     statusCode: 400,
@@ -207,13 +233,36 @@ module.exports = async function (fastify) {
                 error: "A Password or authenticator object is required"
             }
         }
-        
+
         if (!identified) {
             throw {
                 statusCode: 400,
                 error: "Unable to authenticate the user"
             }
         }
+
+        if (twoFactors && twoFactors.length) {
+            if (!totp) {
+                throw {
+                    statusCode: 400,
+                    error: "Missing 2 FA code"
+                }
+            }
+            const twoGood = twoFactors.reduce((acc, cur) => acc || twoFactor.verify(
+                rsa.decrypt(cur.secret, { encoding: "base64" }).toString("ascii"),
+                totp
+            ), false)
+
+            console.log("2FA", twoGood)
+            if (!twoGood) {
+                throw {
+                    statusCode: 400,
+                    error: "Invalid"
+                }
+            }
+            req.log.info("Successfull 2FA")
+        }
+
         req.log.info("User successfully identified")
 
         const expiration = remember ? WEEK_EXPIRES : H24_EXPIRES
@@ -231,12 +280,12 @@ module.exports = async function (fastify) {
         if (!remember) {
             return { token, username }
         }
-        res.setCookie("token", token, {
+        res.setCookie("capstone-token", token, {
             domain: ORIGIN,
             path: "/",
             expires: deadTime,
             sameSite: "strict",
-            secure: true
+            secure: true,
         }).status(200).send({ username })
     })
 
@@ -249,4 +298,132 @@ module.exports = async function (fastify) {
         res.status(204)
         return
     })
+
+    fastify.post("/forgot-password", {
+        schema: require("../schemas/users/forgot.json")
+    }, async (req, res) => {
+        const { rows } = await dbHelper.users.search(req.body.login.trim())
+
+        if (!rows || !rows.length) {
+            throw {
+                statusCode: 400,
+                error: "USer doesn't exists",
+            }
+        }
+
+        const { user_id, email } = rows[0]
+
+        const validationCode = await dbHelper.emails.createEmail(user_id, dbHelper.emails.KINDS.forgotPwd, new Date(Date.now() + H24_EXPIRES))
+        await mailer.send({
+            to: email,
+            subject: "Reset your password",
+            content: `
+<h1>Hi!</h1>
+<p>You just ask for a password reset. To do it:</P>
+<p>Click on the following link or copy and paste it in you browser</p>
+<p><a href="https://romainv42-capstone-project.herokuapp.com/from-email/${validationCode}">https://romainv42-capstone-project.herokuapp.com/from-email/${validationCode}</a></p>
+<p><i>This email expires in 24 hours.</i></p>
+`
+        })
+        res.status(201).send("User successfully registered")
+    })
+
+    const changePassword = async (req, res) => {
+        const {
+            token,
+            login,
+            oldPassword,
+            newPassword,
+            confirmPwd,
+            authenticator
+        } = req.body
+
+        let user_id
+        if (token) {
+            const { rows: user } = await dbHelper.reset.getUser(token)
+            if (!user || !user.length) {
+                throw {
+                    statusCode: 400,
+                    error: "Invalid token",
+                }
+            }
+            console.log(user[0].login, login.trim())
+            if (user[0].login !== login.trim()) {
+                throw {
+                    statusCode: 400,
+                    error: "Invalid login for given token",
+                }
+            }
+            user_id = user[0].user_id
+        } else {
+            user_id = req.user?.user_id
+            if (!user_id) {
+                throw {
+                    statusCode: 401,
+                    error: "User not identified",
+                }
+            }
+
+            const { rows: hasPwd } = await dbHelper.users.hasPasswordAuth(user_id)
+            if (!oldPassword && newPassword && hasPwd && hasPwd.length) {
+                throw {
+                    statusCode: 400,
+                    error: "User didn't provide old password"
+                }
+            }
+
+            if (oldPassword && newPassword && hasPwd && hasPwd.length) {
+                const { rows: pwd } = await dbHelper.users.identifyByPassword(user_id, oldPassword)
+                if (!pwd || !pwd.length) {
+                    throw {
+                        statusCode: 400,
+                        error: "Old password doesn't match",
+                    }
+                }
+            }
+        }
+
+        if (newPassword) {
+            if (newPassword !== confirmPwd) {
+                throw {
+                    statusCode: 400,
+                    error: "Password and confirmation different",
+                }
+            }
+
+            if (!passwordRequirements(newPassword)) {
+                throw {
+                    status: 400,
+                    message: "Password doesn't respect requirements.",
+                }
+            }
+            await dbHelper.users.updatePassword(user_id, newPassword)
+        } else if (authenticator) {
+            const result = validateAuthenticator(authenticator, req.session.challenge)
+            req.session.challenge = null
+            await dbHelper.users.addAuthenticator(user_id, result, `Reset ${new Date().toDateString()}`)
+        } else {
+            throw {
+                statusCode: 400,
+                error: "Impossible case ?!"
+            }
+        }
+
+        if (token) {
+            await dbHelper.reset.deleteRow(user_id, token)
+        }
+
+        res.status(201)
+        return "Update completed!"
+    }
+
+    const pwdSchema = require("../schemas/users/reset.json")
+    fastify.post("/password-reset", {
+        schema: pwdSchema,
+    }, changePassword)
+
+    fastify.post("/password-change", {
+        schema: pwdSchema,
+        preValidation: jwt.verifyHook
+    }, changePassword)
 }

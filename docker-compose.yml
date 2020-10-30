@@ -25,7 +25,7 @@ services:
     working_dir: /app
     ports:
       - "5813:5813"
-    command: npm run dev
+
 
 networks:
   capstone-nw:

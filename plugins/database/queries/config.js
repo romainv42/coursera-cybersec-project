@@ -56,8 +56,22 @@ const queries = [
         CONSTRAINT "messages_message_id" PRIMARY KEY ("message_id"),
         CONSTRAINT "messages_from_fkey" FOREIGN KEY ("from") REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE,
         CONSTRAINT "messages_to_fkey" FOREIGN KEY ("to") REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
-    ) WITH (oids = false);`
-
+    ) WITH (oids = false);`,
+    `CREATE TABLE IF NOT EXISTS "public"."reset_tokens" (
+        "user_id" integer NOT NULL,
+        "token" character varying(44) NOT NULL,
+        CONSTRAINT "reset_tokens_user_id" PRIMARY KEY ("user_id"),
+        CONSTRAINT "reset_tokens_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
+    ) WITH (oids = false);`,
+    `CREATE SEQUENCE IF NOT EXISTS two_factor_twofa_id_seq START 1;`,
+    `CREATE TABLE IF NOT EXISTS "public"."two_factor" (
+        "twofa_id" integer DEFAULT nextval('two_factor_twofa_id_seq') NOT NULL,
+        "user_id" integer NOT NULL,
+        "name" text NOT NULL,
+        "secret" text NOT NULL,
+        CONSTRAINT "two_factor_twofa_id" PRIMARY KEY ("twofa_id"),
+        CONSTRAINT "two_factor_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) NOT DEFERRABLE
+    ) WITH (oids = false);`,
 ]
 
 /**

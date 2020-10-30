@@ -9,6 +9,9 @@
             "remember": {
                 "type": "boolean"
             },
+            "totp": {
+                "type": "string"
+            },
             "oneOf": {
                 "password": {
                     "type": "string"

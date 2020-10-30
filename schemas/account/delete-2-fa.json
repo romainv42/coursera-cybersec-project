@@ -1,0 +1,20 @@
+{
+    "description": "Route allowing to delete an 2FA app",
+    "body": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "id"
+        ]
+    },
+    "response": {
+        "202": {
+            "description": "Delete succeeded",
+            "type": "string"
+        }
+    }
+}

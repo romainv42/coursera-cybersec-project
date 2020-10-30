@@ -13,6 +13,12 @@ const {
     RSA_PASS,
     RSA_PUBLIC,
     RSA_PRIVATE,
+    SMTP_SERVER,
+    SMTP_PORT,
+    SMTP_USER,
+    SMTP_PASSWORD,
+    SENDER,
+    TWOFA_APP_NAME,
 } = process.env
 
 const {
@@ -38,9 +44,9 @@ fastify.register(require("fastify-helmet"), {
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "unpkg.com"],
-            styleSrc: ["'self'", "cdn.jsdelivr.net" ],
+            styleSrc: ["'self'", "cdn.jsdelivr.net"],
             fontSrc: ["'self'"],
-            imgSrc: ["'self'", ],
+            imgSrc: ["'self'", "chart.googleapis.com"],
             upgradeInsecureRequests: [],
         }
     }
@@ -82,8 +88,8 @@ fastify.register(require("./plugins/csrf"))
 // Initiate our RSA Helper
 fastify.register(require("./plugins/rsa"), {
     passphrase: RSA_PASS,
-    private: RSA_PRIVATE || fs.readFileSync(path.join(__dirname, "secrets/rsa-private.pem"), { encoding: "ascii"}),
-    public: RSA_PUBLIC || fs.readFileSync(path.join(__dirname, "secrets/rsa-public.pem"), { encoding: "ascii"}),
+    private: RSA_PRIVATE || fs.readFileSync(path.join(__dirname, "secrets/rsa-private.pem"), { encoding: "ascii" }),
+    public: RSA_PUBLIC || fs.readFileSync(path.join(__dirname, "secrets/rsa-public.pem"), { encoding: "ascii" }),
 })
 
 // Initiate our JWT Helper using the RSA Helper
@@ -95,9 +101,16 @@ fastify.register(require("./plugins/jwt"), {
 fastify.register(require("./plugins/aes"))
 
 // Initiate our Mailer plugin
-fastify.register(require("./plugins/sendgrid"), {
-    apiKey: SENDGRID_API_KEY,
-    sender: SENDGRID_SENDER,
+// fastify.register(require("./plugins/mailer/sendgrid"), {
+//     apiKey: SENDGRID_API_KEY,
+//     sender: SENDGRID_SENDER,
+// })
+fastify.register(require("./plugins/mailer/smtp"), {
+    smtpServer:SMTP_SERVER,
+    smtpPort:SMTP_PORT,
+    authUser:SMTP_USER,
+    authPwd:SMTP_PASSWORD,
+    sender: SENDER,
 })
 
 // Initiate our Database Helper Plugin
@@ -107,6 +120,11 @@ fastify.register(require("./plugins/database"), {
     password: POSTGRES_PASSWORD,
     database: POSTGRES_DB,
     server: POSTGRES_SERVER,
+})
+
+// Initiate our 2-FA plugin
+fastify.register(require("./plugins/2fa"), {
+    appName: TWOFA_APP_NAME,
 })
 
 // Configure route to get initial CSRF token
@@ -123,6 +141,10 @@ fastify.register(require("./routes/email"), { prefix: "/from-email" })
 
 // Configure route to manage messages
 fastify.register(require("./routes/messages"), { prefix: "/api/messages" })
+
+// Configure route to my account page
+fastify.register(require("./routes/account"), { prefix: "/api/accounts" })
+
 
 // Configure route for static files
 fastify.register(require("./routes/static"))

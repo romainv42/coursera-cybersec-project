@@ -1,0 +1,20 @@
+{
+    "description": "Route allowing to delete an authenticator device",
+    "body": {
+        "type": "object",
+        "properties": {
+            "credID": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "credID"
+        ]
+    },
+    "response": {
+        "202": {
+            "description": "Delete succeeded",
+            "type": "string"
+        }
+    }
+}
