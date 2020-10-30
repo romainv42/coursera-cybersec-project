@@ -1,0 +1,11 @@
+{
+    "params": {
+        "type": "object",
+        "properties": {
+            "verificationCode": {
+                "type": "string"
+            }
+        },
+        "required": ["verificationCode"]
+    }
+}

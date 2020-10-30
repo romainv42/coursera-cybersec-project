@@ -1,0 +1,29 @@
+version: "3.3"
+services:
+  database:
+    image: postgres
+    networks:
+      - capstone-nw
+    volumes:
+      - ./__data:/var/lib/postgresql/data
+    env_file: .env
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - capstone-nw
+  
+  webapp:
+    build:
+      context: .
+    env_file: .env
+    networks:
+      - capstone-nw
+    ports:
+      - "5813:5813"
+
+
+networks:
+  capstone-nw:
+

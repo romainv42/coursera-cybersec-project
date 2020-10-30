@@ -1,0 +1,110 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "description": "Register a new user in the database",
+    "body": {
+        "definitions": {
+            "passwordAuth": {
+                "$id": "#passwordAuth",
+                "type": "object",
+                "properties": {
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "confirmPwd": {
+                        "type": "string",
+                        "minLength": 8
+                    }
+                },
+                "required": [
+                    "password",
+                    "confirmPwd"
+                ]
+            },
+            "webAuthN": {
+                "$id": "#webAuthN",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "rawId": {
+                        "type": "string"
+                    },
+                    "response": {
+                        "type": "object",
+                        "properties": {
+                            "clientDataJSON": {
+                                "type": "string"
+                            },
+                            "attestationObject": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "clientDataJSON",
+                            "attestationObject"
+                        ]
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "rawId",
+                    "response",
+                    "type"
+                ]
+            }
+        },
+        "type": "object",
+        "properties": {
+            "login": {
+                "type": "string",
+                "maxLength": 16
+            },
+            "email": {
+                "type": "string",
+                "maxLength": 255,
+                "format": "email"
+            },
+            "moreInfo": {
+                "type": [
+                    "string",
+                    "null"
+                ]
+            },
+            "authenticationMode": {
+                "type": "string",
+                "enum": [
+                    "PWD",
+                    "WAN"
+                ]
+            },
+            "auth": {
+                "type": "object",
+                "oneOf": [
+                    {
+                        "$ref": "#passwordAuth"
+                    },
+                    {
+                        "$ref": "#webAuthN"
+                    }
+                ]
+            }
+        },
+        "required": [
+            "login",
+            "email",
+            "authenticationMode",
+            "auth"
+        ]
+    },
+    "response": {
+        "201": {
+            "description": "User successfully registered",
+            "type": "string"
+        }
+    }
+}

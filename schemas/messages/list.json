@@ -1,0 +1,30 @@
+{
+    "description": "Retrieves list of current user's messages",
+    "response": {
+        "200": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "sender_login": {
+                        "type": "string"
+                    },
+                    "recipient_login": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            },
+                            "date": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

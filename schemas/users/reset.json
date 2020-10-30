@@ -1,0 +1,75 @@
+{
+    "description": "Route allowing a user to change its password",
+    "body": {
+        "type": "object",
+        "properties": {
+            "oneof": {
+                "allOf": [
+                    {
+                        "newPassword": {
+                            "type": "string",
+                            "minLength": 8
+                        }
+                    },
+                    {
+                        "confirmPwd": {
+                            "type": "string",
+                            "minLength": 8
+                        }
+                    }
+                ],
+                "authenticator": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "rawId": {
+                            "type": "string"
+                        },
+                        "response": {
+                            "type": "object",
+                            "properties": {
+                                "clientDataJSON": {
+                                    "type": "string"
+                                },
+                                "attestationObject": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "clientDataJSON",
+                                "attestationObject"
+                            ]
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "rawId",
+                        "response",
+                        "type"
+                    ]
+                }
+            },
+            "token": {
+                "type": "string"
+            },
+            "login": {
+                "type": "string"
+            },
+            "oldPassword": {
+                "type": "string",
+                "minLength": 8
+            }
+        }
+    },
+    "response": {
+        "201": {
+            "type": "string",
+            "description": "Authentication successfully updated."
+        }
+    }
+}

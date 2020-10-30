@@ -1,0 +1,19 @@
+{
+    "description": "Route to save message sent by a user to another one",
+    "body": {
+        "properties": {
+            "recipient": {
+                "description": "Recipient username or email address",
+                "type": "string"
+            },
+            "message": {
+                "description": "Message itself",
+                "type": "string"
+            }
+        },
+        "required": [
+            "recipient",
+            "message"
+        ]
+    }
+}

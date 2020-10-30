@@ -1,0 +1,7 @@
+node_modules
+.env
+.git
+.gitignore
+__data
+public
+.env.base

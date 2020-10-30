@@ -1,0 +1,29 @@
+{
+    "description": "Route to check if login or email address exists",
+    "querystring": {
+        "type": "object",
+        "properties": {
+            "login": {
+                "type": "string",
+                "maxLength": 16
+            },
+            "email": {
+                "type": "string",
+                "maxLength": 255
+            }
+        }
+    },
+    "response": {
+        "200": {
+            "type": "object",
+            "properties": {
+                "loginExists": {
+                    "type":"boolean"
+                },
+                "emailExists": {
+                    "type":"boolean"
+                }
+            }
+        }
+    }
+}
